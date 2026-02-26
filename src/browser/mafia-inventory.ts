@@ -1,15 +1,13 @@
 /**
- * Browser bundle for MafiaInventory getItemsByCategory
- * Load via <script src="mafia-inventory.js"></script>
- * Use: window.MafiaInventory.getItemsByCategory({ chain, contractAddress, categoryId, ... })
+ * Browser bundle - configurable chain, contract, params
+ * window.MafiaInventory.getItemsByCategory({ chain, contractAddress, categoryId, ... })
  */
-
 import { createPublicClient, http } from 'viem';
 import { bsc } from 'viem/chains';
 import { pulsechain } from 'viem/chains';
 import type { Abi, Chain } from 'viem';
-import mafiaInventoryAbi from './abis/MafiaInventory.json' with { type: 'json' };
-import { CarsList } from './constants/cars.js';
+import mafiaInventoryAbi from '../abis/MafiaInventory.json' with { type: 'json' };
+import { CarsList } from '../constants/cars.js';
 
 const CAR_CATEGORY_ID = 15;
 const CHUNK_SIZE = 100;
@@ -100,18 +98,13 @@ export async function getItemsByCategory(options: GetItemsByCategoryOptions): Pr
 
   if (chain === 'pulse') {
     throw new Error(
-      'getItemsByCategory is only available on BNB (MafiaInventory). PulseChain (MafiaInventoryPLS) does not have this function.'
+      'getItemsByCategory is only available on BNB (MafiaInventory). PulseChain does not have this function.'
     );
   }
 
   const rpc = customRpc ?? DEFAULT_RPC[chain];
   const viemChain = CHAINS[chain];
-
-  const client = createPublicClient({
-    chain: viemChain,
-    transport: http(rpc),
-  });
-
+  const client = createPublicClient({ chain: viemChain, transport: http(rpc) });
   const address = contractAddress as `0x${string}`;
   const abi = mafiaInventoryAbi as Abi;
 
@@ -136,10 +129,7 @@ export async function getItemsByCategory(options: GetItemsByCategoryOptions): Pr
       };
     });
 
-    const results = await client.multicall({
-      contracts,
-      allowFailure: false,
-    });
+    const results = await client.multicall({ contracts, allowFailure: false });
 
     for (let i = 0; i < results.length; i++) {
       const raw = results[i] as unknown as GetItemsByCategoryRaw;
@@ -158,5 +148,4 @@ export async function getItemsByCategory(options: GetItemsByCategoryOptions): Pr
   return allItems;
 }
 
-// Exported for IIFE bundle; --global-name=MafiaInventory assigns this to window.MafiaInventory
 export const MafiaInventory = { getItemsByCategory };

@@ -1,18 +1,9 @@
 /**
- * Contract value reader using viem
- *
- * When you provide the contract address and ABI, you can add read functions here.
- * Example usage:
- *   const value = await readContractValue(client, 'functionName', [arg1, arg2]);
+ * Generic contract read helpers
  */
 import type { Abi, PublicClient } from 'viem';
-import { CONTRACT_ADDRESSES, CONTRACT_ABIS } from './config.js';
 import { getClient } from './chains.js';
-import type { ChainName } from './chains.js';
-
-/**
- * Read a value from the contract
- */
+import { CONTRACT_ADDRESSES, CONTRACT_ABIS } from '../config/index.js';
 export async function readContractValue<T = unknown>(
   client: PublicClient,
   address: `0x${string}`,
@@ -20,17 +11,9 @@ export async function readContractValue<T = unknown>(
   functionName: string,
   args: unknown[] = []
 ): Promise<T> {
-  return client.readContract({
-    address,
-    abi,
-    functionName,
-    args,
-  }) as Promise<T>;
+  return client.readContract({ address, abi, functionName, args }) as Promise<T>;
 }
 
-/**
- * Convenience: read from BNB chain (MafiaInventory)
- */
 export async function readOnBnb<T = unknown>(
   functionName: string,
   args: unknown[] = []
@@ -45,9 +28,6 @@ export async function readOnBnb<T = unknown>(
   );
 }
 
-/**
- * Convenience: read from PulseChain (MafiaInventoryPLS)
- */
 export async function readOnPulse<T = unknown>(
   functionName: string,
   args: unknown[] = []

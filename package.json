@@ -6,12 +6,12 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsx src/index.ts",
-    "read:bnb": "node dist/index.js bnb",
-    "read:pulse": "node dist/index.js pulse",
-    "get-items": "tsx src/runGetItemsByCategory.ts",
-    "build:browser": "npx esbuild src/mafia-inventory.browser.ts --bundle --minify --outfile=dist/mafia-inventory.js --format=iife --global-name=MafiaInventory"
+    "start": "node dist/cli/index.js",
+    "dev": "tsx src/cli/index.ts",
+    "read:bnb": "node dist/cli/index.js bnb",
+    "read:pulse": "node dist/cli/index.js pulse",
+    "get-items": "tsx src/cli/get-items.ts",
+    "build:browser": "npx esbuild src/browser/mafia-inventory.ts --bundle --minify --outfile=dist/mafia-inventory.js --format=iife --global-name=MafiaInventory"
   },
   "keywords": [
     "viem",

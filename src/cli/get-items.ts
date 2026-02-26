@@ -1,14 +1,12 @@
 #!/usr/bin/env node
 /**
- * CLI: Fetch items by category
- * Usage: npx tsx src/runGetItemsByCategory.ts <categoryId>
- * Example: npx tsx src/runGetItemsByCategory.ts 0
+ * CLI: get-items <categoryId>
  */
-import { getItemsByCategory } from './getItemsByCategory.js';
+import { getItemsByCategory } from '../features/mafia-inventory/index.js';
 
 const categoryId = parseInt(process.argv[2] ?? '0', 10);
 if (isNaN(categoryId)) {
-  console.error('Usage: npx tsx src/runGetItemsByCategory.ts <categoryId>');
+  console.error('Usage: npx tsx src/cli/get-items.ts <categoryId>');
   process.exit(1);
 }
 
@@ -32,11 +30,8 @@ async function main() {
   const items = await getItemsByCategory(categoryId, 100_000, ({ fetched, batchIndex }) => {
     const elapsed = (Date.now() - start) / 1000;
     const line = renderProgressBar(batchIndex, fetched, elapsed);
-    if (isTTY) {
-      process.stdout.write(`\r${line}    `);
-    } else {
-      console.log(line);
-    }
+    if (isTTY) process.stdout.write(`\r${line}    `);
+    else console.log(line);
   });
 
   const elapsed = ((Date.now() - start) / 1000).toFixed(2);

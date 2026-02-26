@@ -1,4 +1,4 @@
-import type { CarType } from '../types/CarType.js';
+import type { CarType } from '../types/index.js';
 
 export const CarShipPrice = 2000;
 

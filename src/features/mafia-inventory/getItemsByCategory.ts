@@ -1,19 +1,15 @@
 /**
- * getItemsByCategory - Fetch items by category in chunks using multicall
- *
- * - 100 items per getItemsByCategory call (chunk size)
- * - Uses viem multicall to batch multiple chunk requests
- * - Stops when a call returns empty itemIds (end of list)
- * - BNB only (MafiaInventory has this function; MafiaInventoryPLS does not)
- * - When categoryId is 15 (cars), typeId maps to CarsList id and car info is added
+ * getItemsByCategory - Chunked multicall for MafiaInventory
+ * BNB only; categoryId 15 = cars (typeId maps to CarsList)
  */
-
-import { getClient } from './chains.js';
-import { CONTRACT_ADDRESSES, CONTRACT_ABIS } from './config.js';
-import { CarsList } from './constants/cars.js';
-import type { CarType } from './types/CarType.js';
+import { getClient } from '../../core/chains.js';
+import { CONTRACT_ADDRESSES, CONTRACT_ABIS } from '../../config/index.js';
+import { CarsList } from '../../constants/cars.js';
+import type { CarType } from '../../types/index.js';
 
 const CAR_CATEGORY_ID = 15;
+const CHUNK_SIZE = 100;
+const MULTICALL_BATCH_SIZE = 50;
 
 export interface ParsedItemInfo {
   itemId: number;
@@ -21,25 +17,15 @@ export interface ParsedItemInfo {
   typeId: number;
   owner: `0x${string}`;
   cityId: number;
-  /** Present when categoryId is 15 (car items); typeId = CarsList id */
   car?: CarType;
 }
 
-/** Viem returns tuple [itemIds, list, cities] - numeric keys 0,1,2 */
 type GetItemsByCategoryRaw = readonly [
   readonly (bigint | string)[],
   readonly { categoryId: bigint | string; typeId: bigint | string; owner: `0x${string}` }[],
   readonly (number | bigint)[]
 ];
 
-const CHUNK_SIZE = 100;
-const MULTICALL_BATCH_SIZE = 50;
-
-/**
- * Parse raw getItemsByCategory result into ParsedItemInfo[]
- * Viem returns tuple [itemIds, list, cities]
- * When categoryId is 15, adds car info from CarsList (typeId = car id)
- */
 function parseResult(raw: GetItemsByCategoryRaw, categoryId: number): ParsedItemInfo[] {
   const itemIds = raw[0] ?? [];
   const list = raw[1] ?? [];
@@ -65,21 +51,11 @@ function parseResult(raw: GetItemsByCategoryRaw, categoryId: number): ParsedItem
 }
 
 function isEmptyResult(raw: GetItemsByCategoryRaw): boolean {
-  const itemIds = raw[0];
-  return !itemIds || itemIds.length === 0;
+  return !raw[0] || raw[0].length === 0;
 }
 
-/** Progress callback: called after each multicall batch */
 export type GetItemsProgress = (info: { fetched: number; batchIndex: number }) => void;
 
-/**
- * Fetch all items for a category using chunked multicall.
- *
- * @param categoryId - Category ID to query
- * @param maxItems - Max items to fetch (default 100_000). Stop earlier if empty result.
- * @param onProgress - Optional callback after each batch (for progress bar / logging)
- * @returns Array of parsed item infos. Empty array from contract = end of list.
- */
 export async function getItemsByCategory(
   categoryId: number,
   maxItems = 100_000,
@@ -88,7 +64,6 @@ export async function getItemsByCategory(
   const client = getClient('bnb');
   const address = CONTRACT_ADDRESSES.bnb;
   const abi = CONTRACT_ABIS.bnb;
-
   const allItems: ParsedItemInfo[] = [];
   let startIndex = 0;
   let reachedEnd = false;
@@ -110,10 +85,7 @@ export async function getItemsByCategory(
       };
     });
 
-    const results = await client.multicall({
-      contracts,
-      allowFailure: false,
-    });
+    const results = await client.multicall({ contracts, allowFailure: false });
 
     for (let i = 0; i < results.length; i++) {
       const raw = results[i] as unknown as GetItemsByCategoryRaw;

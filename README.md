@@ -30,22 +30,26 @@ npm run read:bnb
 npm run read:pulse
 ```
 
+## Fetch Items by Category
+
+```bash
+npm run get-items <categoryId>
+# Example: npm run get-items 15
+```
+
 ## Adding Your Contract
 
-1. **Update `src/config.ts`:**
-   - Set `CONTRACT_ADDRESS` to your contract address
-   - Add your contract ABI to `CONTRACT_ABI` (read functions only needed)
+1. **Update `src/config/contracts.ts`:**
+   - Set `CONTRACT_ADDRESSES` for each chain
+   - Add ABI imports if using a new contract
 
 2. **Read values in code:**
 
 ```typescript
-import { readOnBnb, readOnPulse } from './src/readContract.js';
+import { readOnBnb, readOnPulse, getItemsByCategory } from 'bnbmafia-ifps-support';
 
-// Read on BNB Smart Chain
 const valueOnBnb = await readOnBnb('yourFunctionName', [arg1, arg2]);
-
-// Read on PulseChain
-const valueOnPulse = await readOnPulse('yourFunctionName', [arg1, arg2]);
+const items = await getItemsByCategory(15);
 ```
 
 ## Environment Variables (optional)
@@ -98,13 +102,32 @@ Test: Run `npm run build:browser`, then `npx serve .` and open `browser-example.
 
 ```
 src/
-  chains.ts                  # BNB & PulseChain client setup
-  config.ts                  # Contract address & ABI
-  readContract.ts            # Contract read helpers
-  getItemsByCategory.ts      # Chunked multicall + car enrichment
-  mafia-inventory.browser.ts # Browser bundle entry
-  constants/cars.ts          # Car list (categoryId 15)
+  core/                    # Shared infrastructure
+    chains.ts              # BNB & PulseChain client
+    readContract.ts        # Generic read helpers
+  config/                  # Configuration
+    contracts.ts           # Addresses & ABIs per chain
+  types/                   # Shared types
+    CarType.ts
+  constants/               # Static data
+    cars.ts                # Car list (categoryId 15)
+  features/                # Feature modules
+    mafia-inventory/       # getItemsByCategory, car enrichment
+  cli/                     # CLI entry points
+    index.ts               # Connectivity test
+    get-items.ts           # get-items command
+  browser/                 # Browser bundle
+    mafia-inventory.ts
+  abis/                    # Contract ABIs (JSON)
+  index.ts                 # Library re-exports
 dist/
-  mafia-inventory.js         # Browser bundle (npm run build:browser)
-browser-example.html         # Demo page for browser bundle
+  mafia-inventory.js       # Browser bundle
+browser-example.html       # Demo page
 ```
+
+### Extending the project
+
+- **New contract:** Add config in `config/contracts.ts`, ABI in `abis/`
+- **New feature:** Create `features/<name>/` with domain logic
+- **New CLI command:** Add `cli/<command>.ts` and npm script
+- **New browser module:** Add `browser/<name>.ts` and build script
