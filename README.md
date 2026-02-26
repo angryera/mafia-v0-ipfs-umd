@@ -61,13 +61,50 @@ const valueOnPulse = await readOnPulse('yourFunctionName', [arg1, arg2]);
 - **BNB Smart Chain** (chainId: 56) – `bsc` from viem/chains
 - **PulseChain** (chainId: 369) – `pulsechain` from viem/chains
 
+## Browser bundle (script tag)
+
+Build a single JS file for use in HTML:
+
+```bash
+npm run build:browser
+```
+
+Load in HTML:
+
+```html
+<script src="mafia-inventory.js" defer></script>
+<script>
+  const items = await window.MafiaInventory.getItemsByCategory({
+    chain: 'bnb',
+    contractAddress: '0x2CB8352Be090846d4878Faa92825188D7bf50654',
+    categoryId: 15,
+    maxItems: 5000,
+    onProgress: (info) => console.log(info.fetched, 'items'),
+  });
+</script>
+```
+
+**Options:** `chain`, `contractAddress`, `categoryId`, `maxItems`, `rpcUrl`, `onProgress`
+
+**Note:** `getItemsByCategory` exists only on BNB (MafiaInventory). PulseChain does not support it.
+
+Test: Run `npm run build:browser`, then `npx serve .` and open `browser-example.html`.
+
+**Types:** Copy `mafia-inventory.d.ts` to your project for TypeScript support.
+
+---
+
 ## Project Structure
 
 ```
 src/
-  chains.ts      # BNB & PulseChain client setup
-  config.ts      # Contract address & ABI (add yours here)
-  readContract.ts # Contract read helpers
-  index.ts       # Entry point / connectivity test
-dist/            # Compiled output (npm run build)
+  chains.ts                  # BNB & PulseChain client setup
+  config.ts                  # Contract address & ABI
+  readContract.ts            # Contract read helpers
+  getItemsByCategory.ts      # Chunked multicall + car enrichment
+  mafia-inventory.browser.ts # Browser bundle entry
+  constants/cars.ts          # Car list (categoryId 15)
+dist/
+  mafia-inventory.js         # Browser bundle (npm run build:browser)
+browser-example.html         # Demo page for browser bundle
 ```

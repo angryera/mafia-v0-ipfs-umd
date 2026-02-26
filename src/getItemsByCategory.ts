@@ -5,10 +5,15 @@
  * - Uses viem multicall to batch multiple chunk requests
  * - Stops when a call returns empty itemIds (end of list)
  * - BNB only (MafiaInventory has this function; MafiaInventoryPLS does not)
+ * - When categoryId is 15 (cars), typeId maps to CarsList id and car info is added
  */
 
 import { getClient } from './chains.js';
 import { CONTRACT_ADDRESSES, CONTRACT_ABIS } from './config.js';
+import { CarsList } from './constants/cars.js';
+import type { CarType } from './types/CarType.js';
+
+const CAR_CATEGORY_ID = 15;
 
 export interface ParsedItemInfo {
   itemId: number;
@@ -16,6 +21,8 @@ export interface ParsedItemInfo {
   typeId: number;
   owner: `0x${string}`;
   cityId: number;
+  /** Present when categoryId is 15 (car items); typeId = CarsList id */
+  car?: CarType;
 }
 
 /** Viem returns tuple [itemIds, list, cities] - numeric keys 0,1,2 */
@@ -31,20 +38,29 @@ const MULTICALL_BATCH_SIZE = 50;
 /**
  * Parse raw getItemsByCategory result into ParsedItemInfo[]
  * Viem returns tuple [itemIds, list, cities]
+ * When categoryId is 15, adds car info from CarsList (typeId = car id)
  */
-function parseResult(raw: GetItemsByCategoryRaw): ParsedItemInfo[] {
+function parseResult(raw: GetItemsByCategoryRaw, categoryId: number): ParsedItemInfo[] {
   const itemIds = raw[0] ?? [];
   const list = raw[1] ?? [];
   const cities = raw[2] ?? [];
+  const isCarCategory = categoryId === CAR_CATEGORY_ID;
+
   return itemIds.map((itemId, index) => {
     const item = list[index];
-    return {
+    const typeId = Number(item?.typeId ?? 0);
+    const base: ParsedItemInfo = {
       itemId: Number(itemId),
       categoryId: Number(item?.categoryId ?? 0),
-      typeId: Number(item?.typeId ?? 0),
+      typeId,
       owner: (item?.owner ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
       cityId: Number(cities[index] ?? 0),
     };
+    if (isCarCategory) {
+      const car = CarsList.find((c) => c.id === typeId);
+      if (car) base.car = car;
+    }
+    return base;
   });
 }
 
@@ -105,7 +121,7 @@ export async function getItemsByCategory(
         reachedEnd = true;
         break;
       }
-      allItems.push(...parseResult(raw));
+      allItems.push(...parseResult(raw, categoryId));
     }
 
     startIndex += batchSize * CHUNK_SIZE;

@@ -43,7 +43,10 @@ async function main() {
   if (isTTY) process.stdout.write('\r' + ' '.repeat(80) + '\r');
   console.log(`Done: ${formatNumber(items.length)} items in ${elapsed}s`);
   if (items.length > 0) {
-    console.log('\nFirst 3:', JSON.stringify(items.slice(0, 3), null, 2));
+    console.log('\nFirst 3:');
+    items.slice(0, 3).forEach((item, i) => {
+      console.log(`  [${i + 1}]`, JSON.stringify(item, null, 2));
+    });
   }
 }
 

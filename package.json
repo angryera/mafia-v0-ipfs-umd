@@ -10,15 +10,23 @@
     "dev": "tsx src/index.ts",
     "read:bnb": "node dist/index.js bnb",
     "read:pulse": "node dist/index.js pulse",
-    "get-items": "tsx src/runGetItemsByCategory.ts"
+    "get-items": "tsx src/runGetItemsByCategory.ts",
+    "build:browser": "npx esbuild src/mafia-inventory.browser.ts --bundle --minify --outfile=dist/mafia-inventory.js --format=iife --global-name=MafiaInventory"
   },
-  "keywords": ["viem", "ethereum", "bnb", "pulsechain", "contract"],
+  "keywords": [
+    "viem",
+    "ethereum",
+    "bnb",
+    "pulsechain",
+    "contract"
+  ],
   "license": "MIT",
   "dependencies": {
     "viem": "^2.46.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "esbuild": "^0.24.2",
     "tsx": "^4.0.0",
     "typescript": "^5.0.0"
   },

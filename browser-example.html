@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MafiaInventory getItemsByCategory</title>
+  </head>
+  <body>
+    <h1>MafiaInventory - getItemsByCategory</h1>
+    <p>
+      Run <code>npm run build:browser</code> then serve this folder (e.g.
+      <code>npx serve .</code>)
+    </p>
+    <button id="load">Load cars (category 15)</button>
+    <pre id="output"></pre>
+
+    <script src="dist/mafia-inventory.js" defer></script>
+    <script>
+      document.getElementById("load").addEventListener("click", async () => {
+        const output = document.getElementById("output");
+        output.textContent = "Loading...";
+
+        try {
+          const items = await window.MafiaInventory.getItemsByCategory({
+            chain: "bnb",
+            contractAddress: "0x2CB8352Be090846d4878Faa92825188D7bf50654",
+            categoryId: 15,
+            maxItems: 100000,
+            onProgress: (info) => {
+              output.textContent = `Fetched ${info.fetched} items (batch ${info.batchIndex})...`;
+            },
+          });
+
+          output.textContent = `Done: ${items.length} items\n\nFirst 3:\n${JSON.stringify(
+            items.slice(0, 3),
+            null,
+            2,
+          )}`;
+        } catch (err) {
+          output.textContent = "Error: " + err.message;
+        }
+      });
+    </script>
+  </body>
+</html>
