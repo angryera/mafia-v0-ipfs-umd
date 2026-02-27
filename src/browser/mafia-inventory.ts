@@ -31,6 +31,8 @@ export interface ParsedItemInfo {
   owner: string;
   cityId: number;
   car?: CarType;
+  /** Present when categoryId is 15 (cars); from getCarItemsByCategory */
+  damagePercent?: number;
 }
 
 export interface GetItemsByCategoryOptions {
@@ -58,6 +60,12 @@ type GetItemsByCategoryRaw = readonly [
   readonly (number | bigint)[]
 ];
 
+/** getCarItemsByCategory returns same 3 arrays plus damagePercents (uint8[]) */
+type GetCarItemsByCategoryRaw = readonly [
+  ...GetItemsByCategoryRaw,
+  readonly (number | bigint)[]
+];
+
 function parseResult(raw: GetItemsByCategoryRaw, categoryId: number): ParsedItemInfo[] {
   const itemIds = raw[0] ?? [];
   const list = raw[1] ?? [];
@@ -82,7 +90,21 @@ function parseResult(raw: GetItemsByCategoryRaw, categoryId: number): ParsedItem
   });
 }
 
+function parseCarResult(raw: GetCarItemsByCategoryRaw, categoryId: number): ParsedItemInfo[] {
+  const damagePercents = raw[3] ?? [];
+  const items = parseResult([raw[0], raw[1], raw[2]], categoryId);
+  items.forEach((item, index) => {
+    const v = damagePercents[index];
+    if (v !== undefined) item.damagePercent = Number(v);
+  });
+  return items;
+}
+
 function isEmptyResult(raw: GetItemsByCategoryRaw): boolean {
+  return !raw[0] || raw[0].length === 0;
+}
+
+function isEmptyCarResult(raw: GetCarItemsByCategoryRaw): boolean {
   return !raw[0] || raw[0].length === 0;
 }
 
@@ -112,6 +134,8 @@ export async function getItemsByCategory(options: GetItemsByCategoryOptions): Pr
   let startIndex = 0;
   let reachedEnd = false;
   let batchIndex = 0;
+  const isCarCategory = categoryId === CAR_CATEGORY_ID;
+  const functionName = isCarCategory ? ('getCarItemsByCategory' as const) : ('getItemsByCategory' as const);
 
   while (!reachedEnd && allItems.length < maxItems) {
     const batchSize = Math.min(
@@ -121,23 +145,35 @@ export async function getItemsByCategory(options: GetItemsByCategoryOptions): Pr
 
     const contracts = Array.from({ length: batchSize }, (_, i) => {
       const chunkStart = startIndex + i * CHUNK_SIZE;
+      const args = isCarCategory
+        ? ([BigInt(chunkStart), BigInt(CHUNK_SIZE)] as const)
+        : ([BigInt(categoryId), BigInt(chunkStart), BigInt(CHUNK_SIZE)] as const);
       return {
         address,
         abi,
-        functionName: 'getItemsByCategory' as const,
-        args: [BigInt(categoryId), BigInt(chunkStart), BigInt(CHUNK_SIZE)],
+        functionName,
+        args,
       };
     });
 
     const results = await client.multicall({ contracts, allowFailure: false });
 
     for (let i = 0; i < results.length; i++) {
-      const raw = results[i] as unknown as GetItemsByCategoryRaw;
-      if (isEmptyResult(raw)) {
-        reachedEnd = true;
-        break;
+      if (isCarCategory) {
+        const raw = results[i] as unknown as GetCarItemsByCategoryRaw;
+        if (isEmptyCarResult(raw)) {
+          reachedEnd = true;
+          break;
+        }
+        allItems.push(...parseCarResult(raw, categoryId));
+      } else {
+        const raw = results[i] as unknown as GetItemsByCategoryRaw;
+        if (isEmptyResult(raw)) {
+          reachedEnd = true;
+          break;
+        }
+        allItems.push(...parseResult(raw, categoryId));
       }
-      allItems.push(...parseResult(raw, categoryId));
     }
 
     startIndex += batchSize * CHUNK_SIZE;
@@ -145,7 +181,13 @@ export async function getItemsByCategory(options: GetItemsByCategoryOptions): Pr
     onProgress?.({ fetched: allItems.length, batchIndex });
   }
 
-  return allItems;
+  // Remove duplicates by itemId (keep first occurrence)
+  const seen = new Set<number>();
+  return allItems.filter((item) => {
+    if (seen.has(item.itemId)) return false;
+    seen.add(item.itemId);
+    return true;
+  });
 }
 
 export const MafiaInventory = { getItemsByCategory };
