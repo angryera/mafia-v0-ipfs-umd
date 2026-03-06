@@ -1,12 +1,10 @@
 /**
- * Browser bundle - configurable chain, contract, params
+ * Browser bundle - MafiaInventory contract
  * window.MafiaInventory.getItemsByCategory({ chain, contractAddress, categoryId, ... })
  */
-import { createPublicClient, http } from 'viem';
-import { bsc } from 'viem/chains';
-import { pulsechain } from 'viem/chains';
-import type { Abi, Chain } from 'viem';
-import mafiaInventoryAbi from '../abis/MafiaInventory.json' with { type: 'json' };
+import type { Abi } from 'viem';
+import { createBrowserClient } from './shared.js';
+import { CONTRACTS, getContractAbi } from '../contracts/index.js';
 import { CarsList } from '../constants/cars.js';
 
 const CAR_CATEGORY_ID = 15;
@@ -31,28 +29,17 @@ export interface ParsedItemInfo {
   owner: string;
   cityId: number;
   car?: CarType;
-  /** Present when categoryId is 15 (cars); from getCarItemsByCategory */
   damagePercent?: number;
 }
 
 export interface GetItemsByCategoryOptions {
   chain: 'bnb' | 'pulse';
-  contractAddress: string;
+  contractAddress?: string;
   categoryId: number;
   maxItems?: number;
   rpcUrl?: string;
   onProgress?: (info: { fetched: number; batchIndex: number }) => void;
 }
-
-const DEFAULT_RPC: Record<'bnb' | 'pulse', string> = {
-  bnb: 'https://bsc-dataseed.binance.org/',
-  pulse: 'https://rpc.pulsechain.com',
-};
-
-const CHAINS: Record<'bnb' | 'pulse', Chain> = {
-  bnb: bsc,
-  pulse: pulsechain,
-};
 
 type GetItemsByCategoryRaw = readonly [
   readonly (bigint | string)[],
@@ -60,7 +47,6 @@ type GetItemsByCategoryRaw = readonly [
   readonly (number | bigint)[]
 ];
 
-/** getCarItemsByCategory returns same 3 arrays plus damagePercents (uint8[]) */
 type GetCarItemsByCategoryRaw = readonly [
   ...GetItemsByCategoryRaw,
   readonly (number | bigint)[]
@@ -111,10 +97,10 @@ function isEmptyCarResult(raw: GetCarItemsByCategoryRaw): boolean {
 export async function getItemsByCategory(options: GetItemsByCategoryOptions): Promise<ParsedItemInfo[]> {
   const {
     chain,
-    contractAddress,
+    contractAddress: customAddress,
     categoryId,
-    maxItems = 100_000,
-    rpcUrl: customRpc,
+    maxItems = Number.POSITIVE_INFINITY,
+    rpcUrl,
     onProgress,
   } = options;
 
@@ -124,11 +110,9 @@ export async function getItemsByCategory(options: GetItemsByCategoryOptions): Pr
     );
   }
 
-  const rpc = customRpc ?? DEFAULT_RPC[chain];
-  const viemChain = CHAINS[chain];
-  const client = createPublicClient({ chain: viemChain, transport: http(rpc) });
-  const address = contractAddress as `0x${string}`;
-  const abi = mafiaInventoryAbi as Abi;
+  const address = (customAddress ?? CONTRACTS.MafiaInventory.addresses[chain]) as `0x${string}`;
+  const abi = getContractAbi(CONTRACTS.MafiaInventory, chain) as Abi;
+  const client = createBrowserClient(chain, rpcUrl);
 
   const allItems: ParsedItemInfo[] = [];
   let startIndex = 0;
@@ -148,12 +132,7 @@ export async function getItemsByCategory(options: GetItemsByCategoryOptions): Pr
       const args = isCarCategory
         ? ([BigInt(chunkStart), BigInt(CHUNK_SIZE)] as const)
         : ([BigInt(categoryId), BigInt(chunkStart), BigInt(CHUNK_SIZE)] as const);
-      return {
-        address,
-        abi,
-        functionName,
-        args,
-      };
+      return { address, abi, functionName, args };
     });
 
     const results = await client.multicall({ contracts, allowFailure: false });
@@ -165,15 +144,20 @@ export async function getItemsByCategory(options: GetItemsByCategoryOptions): Pr
           reachedEnd = true;
           break;
         }
-        allItems.push(...parseCarResult(raw, categoryId));
+        const parsed = parseCarResult(raw, categoryId);
+        allItems.push(...parsed);
+        if (parsed.length < CHUNK_SIZE) reachedEnd = true;
       } else {
         const raw = results[i] as unknown as GetItemsByCategoryRaw;
         if (isEmptyResult(raw)) {
           reachedEnd = true;
           break;
         }
-        allItems.push(...parseResult(raw, categoryId));
+        const parsed = parseResult(raw, categoryId);
+        allItems.push(...parsed);
+        if (parsed.length < CHUNK_SIZE) reachedEnd = true;
       }
+      if (reachedEnd) break;
     }
 
     startIndex += batchSize * CHUNK_SIZE;
@@ -181,7 +165,6 @@ export async function getItemsByCategory(options: GetItemsByCategoryOptions): Pr
     onProgress?.({ fetched: allItems.length, batchIndex });
   }
 
-  // Remove duplicates by itemId (keep first occurrence)
   const seen = new Set<number>();
   return allItems.filter((item) => {
     if (seen.has(item.itemId)) return false;

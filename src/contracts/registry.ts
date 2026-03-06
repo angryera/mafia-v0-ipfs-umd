@@ -1,0 +1,47 @@
+/**
+ * Contract registry - single source of truth for all contracts.
+ * Add new contracts here to scale the project.
+ */
+import type { Abi } from 'viem';
+import mafiaInventoryAbi from '../abis/MafiaInventory.json' with { type: 'json' };
+import mafiaInventoryPlsAbi from '../abis/MafiaInventoryPLS.json' with { type: 'json' };
+import mafiaProfileAbi from '../abis/MafiaProfile.json' with { type: 'json' };
+
+export type ChainName = 'bnb' | 'pulse';
+
+/** Contract config - addresses per chain, ABI(s) */
+export interface ContractConfig {
+  addresses: Record<ChainName, `0x${string}`>;
+  /** Single ABI for all chains, or per-chain if contract differs (e.g. MafiaInventory BNB vs Pulse) */
+  abi: Abi;
+  abiPerChain?: Record<ChainName, Abi>;
+}
+
+/** Get ABI for a contract on a given chain */
+export function getContractAbi<T extends ContractConfig>(config: T, chain: ChainName): Abi {
+  return (config.abiPerChain?.[chain] ?? config.abi) as Abi;
+}
+
+/** Registry of all supported contracts */
+export const CONTRACTS = {
+  MafiaInventory: {
+    addresses: {
+      bnb: '0x2CB8352Be090846d4878Faa92825188D7bf50654' as `0x${string}`,
+      pulse: '0x2c60de22Ec20CcE72245311579c4aD9e5394Adc4' as `0x${string}`,
+    },
+    abi: mafiaInventoryAbi as Abi,
+    abiPerChain: {
+      bnb: mafiaInventoryAbi as Abi,
+      pulse: mafiaInventoryPlsAbi as Abi,
+    },
+  },
+  MafiaProfile: {
+    addresses: {
+      bnb: '0xa08D627E071cB4b53C6D0611d77dbCB659902AA4' as `0x${string}`,
+      pulse: '0x7FB6A056877c1da14a63bFECdE95ebbFa854f07F' as `0x${string}`,
+    },
+    abi: mafiaProfileAbi as Abi,
+  },
+} as const satisfies Record<string, ContractConfig>;
+
+export type ContractName = keyof typeof CONTRACTS;

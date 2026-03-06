@@ -37,20 +37,31 @@ npm run get-items <categoryId>
 # Example: npm run get-items 15
 ```
 
-## Adding Your Contract
+## Fetch User Profiles (MafiaProfile)
 
-1. **Update `src/config/contracts.ts`:**
-   - Set `CONTRACT_ADDRESSES` for each chain
-   - Add ABI imports if using a new contract
+```bash
+npm run get-users-info bnb
+npm run get-users-info pulse
+```
 
-2. **Read values in code:**
+## Adding a New Contract (Scalable)
+
+1. **Add ABI** in `src/abis/YourContract.json`
+2. **Register in `src/contracts/registry.ts`:**
 
 ```typescript
-import { readOnBnb, readOnPulse, getItemsByCategory } from 'bnbmafia-ifps-support';
+import yourContractAbi from '../abis/YourContract.json' with { type: 'json' };
 
-const valueOnBnb = await readOnBnb('yourFunctionName', [arg1, arg2]);
-const items = await getItemsByCategory(15);
+// In CONTRACTS:
+YourContract: {
+  addresses: { bnb: '0x...', pulse: '0x...' },
+  abi: yourContractAbi as Abi,
+},
 ```
+
+3. **Create feature** in `src/features/your-contract/` (or use `readContract` with registry)
+4. **Add browser module** in `src/browser/your-contract.ts` and add to `esbuild.config.js` BROWSER_BUNDLES
+5. **Add CLI** in `src/cli/` and npm script if needed
 
 ## Environment Variables (optional)
 
@@ -67,34 +78,44 @@ const items = await getItemsByCategory(15);
 
 ## Browser bundle (script tag)
 
-Build a single JS file for use in HTML:
+Build all browser bundles:
 
 ```bash
 npm run build:browser
 ```
 
-Load in HTML:
+Produces:
+- `dist/mafia-inventory.js` – `window.MafiaInventory`
+- `dist/mafia-profile.js` – `window.MafiaProfile`
+- `dist/bnbmafia.js` – `window.BnbMafia` (unified: both)
+
+**Unified bundle (recommended):**
 
 ```html
-<script src="mafia-inventory.js" defer></script>
+<script src="dist/bnbmafia.js" defer></script>
 <script>
-  const items = await window.MafiaInventory.getItemsByCategory({
+  const items = await window.BnbMafia.MafiaInventory.getItemsByCategory({
     chain: 'bnb',
-    contractAddress: '0x2CB8352Be090846d4878Faa92825188D7bf50654',
     categoryId: 15,
     maxItems: 5000,
     onProgress: (info) => console.log(info.fetched, 'items'),
   });
+
+  const users = await window.BnbMafia.MafiaProfile.getUsersInfo({
+    chain: 'bnb',
+    maxUsers: 5000,
+    onProgress: (info) => console.log(info.fetched, 'users'),
+  });
 </script>
 ```
 
-**Options:** `chain`, `contractAddress`, `categoryId`, `maxItems`, `rpcUrl`, `onProgress`
+**Standalone bundles** (smaller per-contract): Use `mafia-inventory.js` or `mafia-profile.js` for `window.MafiaInventory` / `window.MafiaProfile`.
 
-**Note:** `getItemsByCategory` exists only on BNB (MafiaInventory). PulseChain does not support it.
+**Options:** `chain`, `contractAddress` (optional override), `rpcUrl`, `onProgress`
 
 Test: Run `npm run build:browser`, then `npx serve .` and open `browser-example.html`.
 
-**Types:** Copy `mafia-inventory.d.ts` to your project for TypeScript support.
+**Types:** Copy `bnbmafia.d.ts` (or `mafia-inventory.d.ts` for inventory only) for TypeScript support.
 
 ---
 
@@ -102,32 +123,36 @@ Test: Run `npm run build:browser`, then `npx serve .` and open `browser-example.
 
 ```
 src/
+  contracts/               # Registry (single source of truth)
+    registry.ts            # Addresses & ABIs for all contracts
   core/                    # Shared infrastructure
     chains.ts              # BNB & PulseChain client
     readContract.ts        # Generic read helpers
-  config/                  # Configuration
-    contracts.ts           # Addresses & ABIs per chain
+  config/                  # Re-exports from registry (backward compat)
   types/                   # Shared types
-    CarType.ts
   constants/               # Static data
-    cars.ts                # Car list (categoryId 15)
   features/                # Feature modules
-    mafia-inventory/       # getItemsByCategory, car enrichment
+    mafia-inventory/       # getItemsByCategory
+    mafia-profile/         # getUsersInfo
   cli/                     # CLI entry points
-    index.ts               # Connectivity test
-    get-items.ts           # get-items command
-  browser/                 # Browser bundle
+  browser/                 # Browser bundles
+    shared.ts              # Client, chains, RPC (browser-safe)
     mafia-inventory.ts
+    mafia-profile.ts
+    index.ts               # Unified BnbMafia entry
   abis/                    # Contract ABIs (JSON)
   index.ts                 # Library re-exports
 dist/
-  mafia-inventory.js       # Browser bundle
+  mafia-inventory.js       # Standalone bundle
+  mafia-profile.js         # Standalone bundle
+  bnbmafia.js              # Unified bundle
+esbuild.config.js          # Browser build config (add bundles here)
 browser-example.html       # Demo page
 ```
 
 ### Extending the project
 
-- **New contract:** Add config in `config/contracts.ts`, ABI in `abis/`
+- **New contract:** Add to `contracts/registry.ts`, ABI in `abis/`
 - **New feature:** Create `features/<name>/` with domain logic
 - **New CLI command:** Add `cli/<command>.ts` and npm script
-- **New browser module:** Add `browser/<name>.ts` and build script
+- **New browser module:** Add `browser/<name>.ts` and entry in `esbuild.config.js` BROWSER_BUNDLES

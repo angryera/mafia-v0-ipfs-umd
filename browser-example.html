@@ -2,39 +2,54 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>MafiaInventory getItemsByCategory</title>
+    <title>BnbMafia - Browser SDK Demo</title>
   </head>
   <body>
-    <h1>MafiaInventory - getItemsByCategory</h1>
+    <h1>BnbMafia Browser SDK</h1>
     <p>
       Run <code>npm run build:browser</code> then serve this folder (e.g.
       <code>npx serve .</code>)
     </p>
-    <button id="load">Load cars (category 15)</button>
+
+    <h2>MafiaInventory</h2>
+    <button id="load-items">Load cars (category 15)</button>
+
+    <h2>MafiaProfile</h2>
+    <button id="load-users">Load user profiles</button>
+
     <pre id="output"></pre>
 
-    <script src="./dist/mafia-inventory.js" defer></script>
+    <!-- Use unified bundle (includes both) -->
+    <script src="./dist/bnbmafia.js" defer></script>
     <script>
-      document.getElementById("load").addEventListener("click", async () => {
-        const output = document.getElementById("output");
-        output.textContent = "Loading...";
+      const output = document.getElementById("output");
 
+      document.getElementById("load-items").addEventListener("click", async () => {
+        output.textContent = "Loading items...";
         try {
-          const items = await window.MafiaInventory.getItemsByCategory({
+          const items = await window.BnbMafia.MafiaInventory.getItemsByCategory({
             chain: "bnb",
-            contractAddress: "0x2CB8352Be090846d4878Faa92825188D7bf50654",
             categoryId: 15,
-            maxItems: 100000,
             onProgress: (info) => {
-              output.textContent = `Fetched ${info.fetched} items (batch ${info.batchIndex})...`;
+              output.textContent = `Items: ${info.fetched} (batch ${info.batchIndex})...`;
             },
           });
+          output.textContent = `Done: ${items.length} items\n\nFirst 2:\n${JSON.stringify(items.slice(0, 2), null, 2)}`;
+        } catch (err) {
+          output.textContent = "Error: " + err.message;
+        }
+      });
 
-          output.textContent = `Done: ${items.length} items\n\nFirst 3:\n${JSON.stringify(
-            items.slice(0, 3),
-            null,
-            2,
-          )}`;
+      document.getElementById("load-users").addEventListener("click", async () => {
+        output.textContent = "Loading users...";
+        try {
+          const users = await window.BnbMafia.MafiaProfile.getUsersInfo({
+            chain: "bnb",
+            onProgress: (info) => {
+              output.textContent = `Users: ${info.fetched} (batch ${info.batchIndex})...`;
+            },
+          });
+          output.textContent = `Done: ${users.length} users\n\nFirst 2:\n${JSON.stringify(users.slice(0, 2), null, 2)}`;
         } catch (err) {
           output.textContent = "Error: " + err.message;
         }

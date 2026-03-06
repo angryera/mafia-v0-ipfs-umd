@@ -1,1 +1,6 @@
-export { CONTRACT_ADDRESSES, CONTRACT_ABIS } from './contracts.js';
+export {
+  CONTRACT_ADDRESSES,
+  CONTRACT_ABIS,
+  MAFIA_PROFILE_ADDRESSES,
+  MAFIA_PROFILE_ABI,
+} from './contracts.js';

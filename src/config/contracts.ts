@@ -1,17 +1,23 @@
 /**
- * Contract configuration - addresses and ABIs per chain
+ * Contract configuration - re-exports from registry for backward compatibility.
+ * New code should import from '../contracts' directly.
  */
-import type { Abi } from 'viem';
 import type { ChainName } from '../core/chains.js';
-import mafiaInventoryAbi from '../abis/MafiaInventory.json' with { type: 'json' };
-import mafiaInventoryPlsAbi from '../abis/MafiaInventoryPLS.json' with { type: 'json' };
+import { CONTRACTS, getContractAbi } from '../contracts/index.js';
 
-export const CONTRACT_ADDRESSES: Record<ChainName, `0x${string}`> = {
-  bnb: '0x2CB8352Be090846d4878Faa92825188D7bf50654',
-  pulse: '0x2c60de22Ec20CcE72245311579c4aD9e5394Adc4',
+/** @deprecated Use CONTRACTS.MafiaInventory.addresses instead */
+export const CONTRACT_ADDRESSES: Record<ChainName, `0x${string}`> =
+  CONTRACTS.MafiaInventory.addresses;
+
+/** @deprecated Use getContractAbi(CONTRACTS.MafiaInventory, chain) instead */
+export const CONTRACT_ABIS: Record<ChainName, import('viem').Abi> = {
+  bnb: getContractAbi(CONTRACTS.MafiaInventory, 'bnb'),
+  pulse: getContractAbi(CONTRACTS.MafiaInventory, 'pulse'),
 };
 
-export const CONTRACT_ABIS: Record<ChainName, Abi> = {
-  bnb: mafiaInventoryAbi as Abi,
-  pulse: mafiaInventoryPlsAbi as Abi,
-};
+/** @deprecated Use CONTRACTS.MafiaProfile.addresses instead */
+export const MAFIA_PROFILE_ADDRESSES: Record<ChainName, `0x${string}`> =
+  CONTRACTS.MafiaProfile.addresses;
+
+/** @deprecated Use CONTRACTS.MafiaProfile.abi instead */
+export const MAFIA_PROFILE_ABI = CONTRACTS.MafiaProfile.abi;
