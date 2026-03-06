@@ -1,18 +1,16 @@
 /**
- * Unified browser bundle - all contract APIs
- * window.BnbMafia.MafiaInventory.getItemsByCategory(...)
- * window.BnbMafia.MafiaProfile.getUsersInfo(...)
+ * Unified browser bundle - assigns window.MafiaInventory and window.MafiaProfile
  */
 import { MafiaInventory } from './mafia-inventory.js';
 import { MafiaProfile } from './mafia-profile.js';
 
+declare const window: Window & { MafiaInventory?: unknown; MafiaProfile?: unknown };
+
+if (typeof window !== 'undefined') {
+  window.MafiaInventory = MafiaInventory;
+  window.MafiaProfile = MafiaProfile;
+}
+
 export { MafiaInventory, MafiaProfile };
 export { getItemsByCategory } from './mafia-inventory.js';
 export { getUsersInfo } from './mafia-profile.js';
-
-export const BnbMafia = {
-  MafiaInventory,
-  MafiaProfile,
-};
-
-export default BnbMafia;

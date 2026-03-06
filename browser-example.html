@@ -20,14 +20,14 @@
     <pre id="output"></pre>
 
     <!-- Use unified bundle (includes both) -->
-    <script src="./dist/bnbmafia.js" defer></script>
+    <script src="./dist/mafia-utils.js" defer></script>
     <script>
       const output = document.getElementById("output");
 
       document.getElementById("load-items").addEventListener("click", async () => {
         output.textContent = "Loading items...";
         try {
-          const items = await window.BnbMafia.MafiaInventory.getItemsByCategory({
+          const items = await window.MafiaInventory.getItemsByCategory({
             chain: "bnb",
             categoryId: 15,
             onProgress: (info) => {
@@ -43,7 +43,7 @@
       document.getElementById("load-users").addEventListener("click", async () => {
         output.textContent = "Loading users...";
         try {
-          const users = await window.BnbMafia.MafiaProfile.getUsersInfo({
+          const users = await window.MafiaProfile.getUsersInfo({
             chain: "bnb",
             onProgress: (info) => {
               output.textContent = `Users: ${info.fetched} (batch ${info.batchIndex})...`;

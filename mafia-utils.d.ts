@@ -1,8 +1,7 @@
 /**
  * Type declarations for browser bundles.
- * - window.MafiaInventory (mafia-inventory.js)
- * - window.MafiaProfile (mafia-profile.js)
- * - window.BnbMafia (bnbmafia.js) - unified bundle
+ * - window.MafiaInventory (mafia-inventory.js or mafia-utils.js)
+ * - window.MafiaProfile (mafia-profile.js or mafia-utils.js)
  */
 
 export interface CarType {
@@ -59,16 +58,10 @@ export interface MafiaProfileAPI {
   getUsersInfo(options: GetUsersInfoOptions): Promise<ParsedUserInfo[]>;
 }
 
-export interface BnbMafiaAPI {
-  MafiaInventory: MafiaInventoryAPI;
-  MafiaProfile: MafiaProfileAPI;
-}
-
 declare global {
   interface Window {
     MafiaInventory: MafiaInventoryAPI;
     MafiaProfile: MafiaProfileAPI;
-    BnbMafia: BnbMafiaAPI;
   }
 }
 

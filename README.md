@@ -87,21 +87,21 @@ npm run build:browser
 Produces:
 - `dist/mafia-inventory.js` – `window.MafiaInventory`
 - `dist/mafia-profile.js` – `window.MafiaProfile`
-- `dist/bnbmafia.js` – `window.BnbMafia` (unified: both)
+- `dist/mafia-utils.js` – unified (sets `window.MafiaInventory` and `window.MafiaProfile`)
 
 **Unified bundle (recommended):**
 
 ```html
-<script src="dist/bnbmafia.js" defer></script>
+<script src="dist/mafia-utils.js" defer></script>
 <script>
-  const items = await window.BnbMafia.MafiaInventory.getItemsByCategory({
+  const items = await window.MafiaInventory.getItemsByCategory({
     chain: 'bnb',
     categoryId: 15,
     maxItems: 5000,
     onProgress: (info) => console.log(info.fetched, 'items'),
   });
 
-  const users = await window.BnbMafia.MafiaProfile.getUsersInfo({
+  const users = await window.MafiaProfile.getUsersInfo({
     chain: 'bnb',
     maxUsers: 5000,
     onProgress: (info) => console.log(info.fetched, 'users'),
@@ -109,13 +109,13 @@ Produces:
 </script>
 ```
 
-**Standalone bundles** (smaller per-contract): Use `mafia-inventory.js` or `mafia-profile.js` for `window.MafiaInventory` / `window.MafiaProfile`.
+**Standalone bundles** (smaller, load one contract): Use `mafia-inventory.js` or `mafia-profile.js`; each sets its own `window.MafiaInventory` or `window.MafiaProfile`.
 
 **Options:** `chain`, `contractAddress` (optional override), `rpcUrl`, `onProgress`
 
 Test: Run `npm run build:browser`, then `npx serve .` and open `browser-example.html`.
 
-**Types:** Copy `bnbmafia.d.ts` (or `mafia-inventory.d.ts` for inventory only) for TypeScript support.
+**Types:** Copy `mafia-utils.d.ts` (or `mafia-inventory.d.ts` for inventory only) for TypeScript support.
 
 ---
 
@@ -139,13 +139,13 @@ src/
     shared.ts              # Client, chains, RPC (browser-safe)
     mafia-inventory.ts
     mafia-profile.ts
-    index.ts               # Unified BnbMafia entry
+    index.ts               # Unified entry (assigns window.Mafia*)
   abis/                    # Contract ABIs (JSON)
   index.ts                 # Library re-exports
 dist/
   mafia-inventory.js       # Standalone bundle
   mafia-profile.js         # Standalone bundle
-  bnbmafia.js              # Unified bundle
+  mafia-utils.js           # Unified bundle
 esbuild.config.js          # Browser build config (add bundles here)
 browser-example.html       # Demo page
 ```
