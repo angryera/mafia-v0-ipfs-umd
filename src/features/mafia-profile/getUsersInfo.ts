@@ -20,13 +20,15 @@ export interface ParsedUserInfo {
   isJailed: boolean;
   gender: number;
   country: string;
+  jailedUntil: number;
 }
 
 type GetUsersInfoRaw = readonly [
   readonly `0x${string}`[],
   readonly string[],
   readonly boolean[],
-  readonly { gender: number | bigint; country: string }[]
+  readonly { gender: number | bigint; country: string }[],
+  readonly bigint[]
 ];
 
 function parseResult(raw: GetUsersInfoRaw): ParsedUserInfo[] {
@@ -34,6 +36,7 @@ function parseResult(raw: GetUsersInfoRaw): ParsedUserInfo[] {
   const names = raw[1] ?? [];
   const isJailed = raw[2] ?? [];
   const extraInfos = raw[3] ?? [];
+  const jailedUntil = raw[4] ?? [];
 
   return users.map((user, index) => ({
     user: user as `0x${string}`,
@@ -41,6 +44,7 @@ function parseResult(raw: GetUsersInfoRaw): ParsedUserInfo[] {
     isJailed: isJailed[index] ?? false,
     gender: Number(extraInfos[index]?.gender ?? 0),
     country: extraInfos[index]?.country ?? '',
+    jailedUntil: Number(jailedUntil[index] ?? 0n),
   }));
 }
 

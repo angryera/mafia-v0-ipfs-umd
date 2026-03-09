@@ -44,6 +44,7 @@ export interface ParsedUserInfo {
   isJailed: boolean;
   gender: number;
   country: string;
+  jailedUntil: number;
 }
 
 export interface GetUsersInfoOptions {

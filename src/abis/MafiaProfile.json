@@ -45,6 +45,11 @@
         "internalType": "struct MafiaProfile.UserExtraInfo[]",
         "name": "extraInfos",
         "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "jailedUntil",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",

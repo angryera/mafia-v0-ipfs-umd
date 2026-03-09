@@ -44,7 +44,14 @@ async function main() {
   if (users.length > 0) {
     console.log('\nFirst 3:');
     users.slice(0, 3).forEach((user, i) => {
-      console.log(`  [${i + 1}]`, JSON.stringify(user, null, 2));
+      console.log(
+        `  [${i + 1}]`,
+        JSON.stringify(
+          user,
+          (_, value) => (typeof value === 'bigint' ? value.toString() : value),
+          2
+        )
+      );
     });
   }
 }
