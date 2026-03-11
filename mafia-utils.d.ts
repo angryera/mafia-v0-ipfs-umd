@@ -59,10 +59,105 @@ export interface MafiaProfileAPI {
   getUsersInfo(options: GetUsersInfoOptions): Promise<ParsedUserInfo[]>;
 }
 
+export interface ParsedFamilyInfo {
+  familyId: number;
+  leaders: string[];
+  successor: string;
+  leaveFee: number;
+  memberCount: number;
+  isDead: boolean;
+  name: string;
+}
+
+export interface GetFamiliesOptions {
+  chain: 'bnb' | 'pulse';
+  contractAddress?: string;
+  maxFamilies?: number;
+  rpcUrl?: string;
+  onProgress?: (info: { fetched: number; batchIndex: number }) => void;
+}
+
+export interface ParsedPlayerInfo {
+  user: string;
+  familyId: number;
+  level: number; // PlayerLevel enum as number
+  isDead: boolean;
+}
+
+export interface GetPlayersInfoOptions {
+  chain: 'bnb' | 'pulse';
+  contractAddress?: string;
+  users: string[];
+  rpcUrl?: string;
+}
+
+export interface EnrichedLeaderInfo {
+  address: string;
+  role: string; // Don, Consigliere, Capodecina, Capo, etc.
+  name: string;
+  familyId: number;
+  level: number;
+  isDead: boolean;
+  isJailed: boolean;
+  gender: number;
+  country: string;
+  jailedUntil: number;
+}
+
+export interface EnrichedSuccessorInfo {
+  address: string;
+  name: string;
+  familyId: number;
+  level: number;
+  isDead: boolean;
+  isJailed: boolean;
+  gender: number;
+  country: string;
+  jailedUntil: number;
+}
+
+export interface EnrichedPlayerInfo {
+  address: string;
+  name: string;
+  familyId: number;
+  level: number;
+  isDead: boolean;
+  isJailed: boolean;
+  gender: number;
+  country: string;
+  jailedUntil: number;
+}
+
+export interface EnrichedFamilyInfo extends Omit<ParsedFamilyInfo, 'leaders' | 'successor'> {
+  leaders: EnrichedLeaderInfo[];
+  successor: EnrichedSuccessorInfo;
+  players: EnrichedPlayerInfo[]; // All members of this family
+}
+
+export interface GetFamiliesWithPlayersOptions {
+  chain: 'bnb' | 'pulse';
+  contractAddress?: string;
+  maxFamilies?: number;
+  maxUsers?: number;
+  rpcUrl?: string;
+  onProgress?: (info: {
+    step: 'users' | 'families' | 'players';
+    fetched: number;
+    batchIndex?: number;
+  }) => void;
+}
+
+export interface MafiaFamilyAPI {
+  getFamilies(options: GetFamiliesOptions): Promise<ParsedFamilyInfo[]>;
+  getPlayersInfo(options: GetPlayersInfoOptions): Promise<ParsedPlayerInfo[]>;
+  getFamiliesWithPlayers(options: GetFamiliesWithPlayersOptions): Promise<EnrichedFamilyInfo[]>;
+}
+
 declare global {
   interface Window {
     MafiaInventory: MafiaInventoryAPI;
     MafiaProfile: MafiaProfileAPI;
+    MafiaFamily: MafiaFamilyAPI;
   }
 }
 

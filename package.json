@@ -12,6 +12,7 @@
     "read:pulse": "node dist/cli/index.js pulse",
     "get-items": "tsx src/cli/get-items.ts",
     "get-users-info": "tsx src/cli/get-users-info.ts",
+    "get-families": "tsx src/cli/get-families.ts",
     "build:browser": "node esbuild.config.js",
     "build:browser:inventory": "npx esbuild src/browser/mafia-inventory.ts --bundle --minify --outfile=dist/mafia-inventory.js --format=iife --global-name=MafiaInventory",
     "build:browser:profile": "npx esbuild src/browser/mafia-profile.ts --bundle --minify --outfile=dist/mafia-profile.js --format=iife --global-name=MafiaProfile"

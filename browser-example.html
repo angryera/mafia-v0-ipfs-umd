@@ -1,59 +1,223 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>BnbMafia - Browser SDK Demo</title>
-  </head>
-  <body>
-    <h1>BnbMafia Browser SDK</h1>
-    <p>
-      Run <code>npm run build:browser</code> then serve this folder (e.g.
-      <code>npx serve .</code>)
-    </p>
 
-    <h2>MafiaInventory</h2>
-    <button id="load-items">Load cars (category 15)</button>
+<head>
+  <meta charset="UTF-8" />
+  <title>BnbMafia - Browser SDK Demo</title>
+</head>
 
-    <h2>MafiaProfile</h2>
-    <button id="load-users">Load user profiles</button>
+<body>
+  <h1>BnbMafia Browser SDK</h1>
+  <p>
+    Run <code>npm run build:browser</code> then serve this folder (e.g.
+    <code>npx serve .</code>)
+  </p>
 
-    <pre id="output"></pre>
+  <h2>MafiaInventory</h2>
+  <button id="load-items">Load cars (category 15)</button>
 
-    <!-- Use unified bundle (includes both) -->
-    <script src="./dist/mafia-utils.js" defer></script>
-    <script>
-      const output = document.getElementById("output");
+  <h2>MafiaProfile</h2>
+  <button id="load-users">Load user profiles</button>
 
-      document.getElementById("load-items").addEventListener("click", async () => {
-        output.textContent = "Loading items...";
-        try {
-          const items = await window.MafiaInventory.getItemsByCategory({
-            chain: "bnb",
-            categoryId: 15,
-            onProgress: (info) => {
-              output.textContent = `Items: ${info.fetched} (batch ${info.batchIndex})...`;
-            },
+  <h2>MafiaFamily</h2>
+  <button id="load-families-with-players">Load families + players info</button>
+
+  <h2>Real Scenario: Family Dashboard</h2>
+  <button id="build-dashboard">Build Family Dashboard</button>
+  <p style="font-size: 0.9em; color: #666;">
+    This will: 1) Get users, 2) Get families, 3) Get player info, then match everything to show family leaders with
+    names and member lists.
+  </p>
+
+  <pre id="output"></pre>
+
+  <!-- Use unified bundle (includes both) -->
+  <script src="./dist/mafia-utils.js" defer></script>
+  <script>
+    const output = document.getElementById("output");
+
+    document.getElementById("load-items").addEventListener("click", async () => {
+      output.textContent = "Loading items...";
+      try {
+        const items = await window.MafiaInventory.getItemsByCategory({
+          chain: "bnb",
+          categoryId: 15,
+          onProgress: (info) => {
+            output.textContent = `Items: ${info.fetched} (batch ${info.batchIndex})...`;
+          },
+        });
+        output.textContent = `Done: ${items.length} items\n\nFirst 2:\n${JSON.stringify(items.slice(0, 2), null, 2)}`;
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    });
+
+    document.getElementById("load-users").addEventListener("click", async () => {
+      output.textContent = "Loading users...";
+      try {
+        const users = await window.MafiaProfile.getUsersInfo({
+          chain: "bnb",
+          onProgress: (info) => {
+            output.textContent = `Users: ${info.fetched} (batch ${info.batchIndex})...`;
+          },
+        });
+        output.textContent = `Done: ${users.length} users\n\nFirst 2:\n${JSON.stringify(users.slice(0, 2), null, 2)}`;
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    });
+
+    document.getElementById("load-families-with-players").addEventListener("click", async () => {
+      output.textContent = "Loading families with player info...";
+      try {
+        const enrichedFamilies = await window.MafiaFamily.getFamiliesWithPlayers({
+          chain: "bnb",
+          onProgress: (info) => {
+            if (info.step === 'families') {
+              output.textContent = `Loading families... ${info.fetched} families (batch ${info.batchIndex || 0})`;
+            } else {
+              output.textContent = `Loading player info... ${info.fetched} players`;
+            }
+          },
+        });
+
+        output.textContent = `Done: ${enrichedFamilies.length} families\n\nFirst 3 (with enriched player info):\n${JSON.stringify(
+          enrichedFamilies.slice(0, 3),
+          null,
+          2
+        )}`;
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    });
+
+    document.getElementById("build-dashboard").addEventListener("click", async () => {
+      output.textContent = "Building family dashboard...\n\nStep 1: Loading users...";
+      try {
+        // Step 1: Get all users (players) with their profile names
+        const users = await window.MafiaProfile.getUsersInfo({
+          chain: "bnb",
+          maxUsers: 1000, // Limit for demo
+          onProgress: (info) => {
+            output.textContent = `Step 1: Loading users... ${info.fetched} users`;
+          },
+        });
+
+        output.textContent = `Step 1: Done! ${users.length} users loaded\n\nStep 2: Loading families with player info...`;
+
+        // Step 2: Get all families with enriched player info (leaders & successors)
+        const enrichedFamilies = await window.MafiaFamily.getFamiliesWithPlayers({
+          chain: "bnb",
+          maxFamilies: 100, // Limit for demo
+          onProgress: (info) => {
+            if (info.step === 'families') {
+              output.textContent = `Step 2: Loading families... ${info.fetched} families`;
+            } else {
+              output.textContent = `Step 2: Loading player info... ${info.fetched} players`;
+            }
+          },
+        });
+
+        output.textContent = `Step 2: Done! ${enrichedFamilies.length} families loaded\n\nStep 3: Getting player info for all users...`;
+
+        // Step 3: Get player info (which family each player belongs to)
+        const userAddresses = users.map((u) => u.user);
+        const playersInfo = await window.MafiaFamily.getPlayersInfo({
+          chain: "bnb",
+          users: userAddresses,
+        });
+
+        output.textContent = `Step 3: Done! ${playersInfo.length} players info loaded\n\nStep 4: Building dashboard...`;
+
+        // Step 4: Build lookup maps
+        // Map: address -> user profile
+        const userMap = new Map();
+        users.forEach((u) => {
+          userMap.set(u.user.toLowerCase(), u);
+        });
+
+        // Map: address -> player info
+        const playerInfoMap = new Map();
+        playersInfo.forEach((p) => {
+          playerInfoMap.set(p.user.toLowerCase(), p);
+        });
+
+        // Step 5: Build enriched family data (families already have player info, now add profile names)
+        const finalEnrichedFamilies = enrichedFamilies.map((family) => {
+          // Enrich leaders with profile names
+          const enrichedLeaders = family.leaders.map((leader) => {
+            const user = userMap.get(leader.address.toLowerCase());
+            return {
+              ...leader,
+              name: user?.name || "Unknown",
+              isJailed: user?.isJailed || false,
+            };
           });
-          output.textContent = `Done: ${items.length} items\n\nFirst 2:\n${JSON.stringify(items.slice(0, 2), null, 2)}`;
-        } catch (err) {
-          output.textContent = "Error: " + err.message;
-        }
-      });
 
-      document.getElementById("load-users").addEventListener("click", async () => {
-        output.textContent = "Loading users...";
-        try {
-          const users = await window.MafiaProfile.getUsersInfo({
-            chain: "bnb",
-            onProgress: (info) => {
-              output.textContent = `Users: ${info.fetched} (batch ${info.batchIndex})...`;
-            },
+          // Enrich successor with profile name
+          const successorUser = userMap.get(family.successor.address.toLowerCase());
+          const enrichedSuccessor = {
+            ...family.successor,
+            name: successorUser?.name || "None",
+          };
+
+          // Get all members of this family
+          const familyMembers = [];
+          playerInfoMap.forEach((playerInfo, playerAddr) => {
+            if (playerInfo.familyId === family.familyId) {
+              const user = userMap.get(playerAddr);
+              familyMembers.push({
+                address: playerAddr,
+                name: user?.name || "Unknown",
+                level: playerInfo.level,
+                isDead: playerInfo.isDead,
+                isJailed: user?.isJailed || false,
+              });
+            }
           });
-          output.textContent = `Done: ${users.length} users\n\nFirst 2:\n${JSON.stringify(users.slice(0, 2), null, 2)}`;
-        } catch (err) {
-          output.textContent = "Error: " + err.message;
-        }
-      });
-    </script>
-  </body>
+
+          return {
+            familyId: family.familyId,
+            name: family.name,
+            leaders: enrichedLeaders,
+            successor: enrichedSuccessor,
+            leaveFee: family.leaveFee,
+            memberCount: family.memberCount,
+            isDead: family.isDead,
+            members: familyMembers,
+          };
+        });
+
+        // Step 6: Display results
+        const summary = {
+          totalUsers: users.length,
+          totalFamilies: enrichedFamilies.length,
+          familiesWithMembers: finalEnrichedFamilies.filter((f) => f.members.length > 0).length,
+          sampleFamilies: finalEnrichedFamilies
+            .filter((f) => f.members.length > 0)
+            .slice(0, 3)
+            .map((f) => ({
+              id: f.familyId,
+              name: f.name,
+              leaders: f.leaders.map((l) => `${l.role}: ${l.name} (${l.address.slice(0, 6)}...)`),
+              memberCount: f.memberCount,
+              actualMembersFound: f.members.length,
+              sampleMembers: f.members.slice(0, 5).map((m) => ({
+                name: m.name,
+                level: m.level,
+                isDead: m.isDead,
+              })),
+            })),
+        };
+
+        output.textContent = `✅ Family Dashboard Complete!\n\n${JSON.stringify(summary, null, 2)}\n\nFull data available in console.`;
+        console.log("Enriched Families:", finalEnrichedFamilies);
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+
 </html>

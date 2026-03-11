@@ -10,3 +10,17 @@ export {
   type UserExtraInfo,
   type GetUsersInfoProgress,
 } from './mafia-profile/index.js';
+
+export {
+  getFamilies,
+  type ParsedFamilyInfo,
+  type GetFamiliesProgress,
+  getPlayersInfo,
+  type ParsedPlayerInfo,
+  getFamiliesWithPlayers,
+  type EnrichedFamilyInfo,
+  type EnrichedLeaderInfo,
+  type EnrichedSuccessorInfo,
+  type EnrichedPlayerInfo,
+  type GetFamiliesWithPlayersProgress,
+} from './mafia-family/index.js';
