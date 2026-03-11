@@ -24,3 +24,8 @@ export {
   type EnrichedPlayerInfo,
   type GetFamiliesWithPlayersProgress,
 } from './mafia-family/index.js';
+
+export {
+  getSlots,
+  type ParsedSlotInfo,
+} from './mafia-map/index.js';

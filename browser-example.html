@@ -1,222 +1,405 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BnbMafia - Browser SDK Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            dark: {
+              50: '#f9fafb',
+              100: '#f3f4f6',
+              200: '#e5e7eb',
+              300: '#d1d5db',
+              400: '#9ca3af',
+              500: '#6b7280',
+              600: '#4b5563',
+              700: '#374151',
+              800: '#1f2937',
+              900: '#111827',
+              950: '#030712',
+            },
+            accent: {
+              500: '#64748b',
+              600: '#475569',
+              700: '#334155',
+            },
+            terminal: {
+              green: '#00ff00',
+              cyan: '#00ffff',
+              yellow: '#ffff00',
+              red: '#ff0000',
+              bg: '#0d1117',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      background-color: #0d1117;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .terminal-line::before {
+      content: '$ ';
+      color: #00ff00;
+    }
+    .terminal-success {
+      color: #00ff00;
+    }
+    .terminal-error {
+      color: #ff0000;
+    }
+    .terminal-info {
+      color: #00ffff;
+    }
+    .terminal-warning {
+      color: #ffff00;
+    }
+    .cli-button {
+      color: #00ff00;
+      transition: all 0.2s;
+      background-color: transparent;
+    }
+    .cli-button:hover:not(:disabled) {
+      color: #00ffff;
+      border-color: #00ffff;
+    }
+    .cli-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .cli-input {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      color: #00ff00;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+    }
+    .cli-input:focus {
+      outline: none;
+      border-color: #00ffff;
+      color: #00ffff;
+    }
+    .cli-input::placeholder {
+      color: #6e7681;
+    }
+  </style>
 </head>
 
-<body>
-  <h1>BnbMafia Browser SDK</h1>
-  <p>
-    Run <code>npm run build:browser</code> then serve this folder (e.g.
-    <code>npx serve .</code>)
-  </p>
+<body class="min-h-screen text-gray-100" style="background-color: #0d1117;">
+  <div class="mx-auto px-4 py-8 max-w-7xl container" style="background-color: #0d1117;">
+    <!-- Header -->
+    <header class="mb-6">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="font-mono text-cyan-400 text-sm">$</span>
+        <h1 class="font-mono font-bold text-white text-2xl">BnbMafia Browser SDK</h1>
+      </div>
+      <p class="pl-4 font-mono text-gray-500 text-xs">
+        # Run <code class="text-cyan-400">npm run build:browser</code> then serve this folder
+      </p>
+    </header>
 
-  <h2>MafiaInventory</h2>
-  <button id="load-items">Load cars (category 15)</button>
+    <!-- Main Content Grid -->
+    <div class="gap-4 grid grid-cols-1 lg:grid-cols-12 mb-8">
+      <!-- Left Column: Action Cards -->
+      <div class="space-y-2 lg:col-span-3">
+        <!-- MafiaInventory Card -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">MafiaInventory</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getItemsByCategory(</span>
+              <input type="number" id="category-id" value="15" class="w-16 text-center cli-input" placeholder="15">
+              <span class="font-mono text-gray-500 text-xs">)</span>
+            </div>
+            <button id="load-items" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+          </div>
+        </div>
 
-  <h2>MafiaProfile</h2>
-  <button id="load-users">Load user profiles</button>
+        <!-- MafiaProfile Card -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">MafiaProfile</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getUsersInfo()</span>
+            </div>
+            <button id="load-users" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+          </div>
+        </div>
 
-  <h2>MafiaFamily</h2>
-  <button id="load-families-with-players">Load families + players info</button>
+        <!-- MafiaFamily Card -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">MafiaFamily</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getFamiliesWithPlayers()</span>
+            </div>
+            <button id="load-families-with-players" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+          </div>
+        </div>
 
-  <h2>Real Scenario: Family Dashboard</h2>
-  <button id="build-dashboard">Build Family Dashboard</button>
-  <p style="font-size: 0.9em; color: #666;">
-    This will: 1) Get users, 2) Get families, 3) Get player info, then match everything to show family leaders with
-    names and member lists.
-  </p>
+        <!-- MafiaMap Card -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">MafiaMap</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getSlots(cityId:</span>
+              <input type="number" id="city-id" value="1" class="w-16 text-center cli-input" placeholder="1">
+              <span class="font-mono text-gray-500 text-xs">)</span>
+            </div>
+            <button id="load-slots" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+          </div>
+        </div>
 
-  <pre id="output"></pre>
+      </div>
+
+      <!-- Right Column: Terminal Output -->
+      <div class="lg:col-span-9">
+        <div class="top-4 sticky shadow-lg border border-dark-700 rounded-lg h-full overflow-hidden" style="background-color: #0d1117;">
+          <!-- Terminal Header -->
+          <div class="flex items-center gap-2 bg-dark-900 px-4 py-2 border-dark-700 border-b">
+            <div class="flex gap-1.5">
+              <div class="bg-red-500 rounded-full w-3 h-3"></div>
+              <div class="bg-yellow-500 rounded-full w-3 h-3"></div>
+              <div class="bg-green-500 rounded-full w-3 h-3"></div>
+            </div>
+            <span class="ml-2 font-mono text-gray-400 text-xs">terminal</span>
+          </div>
+          <!-- Terminal Content -->
+          <pre id="output" class="p-4 min-h-[500px] max-h-[calc(100vh-180px)] overflow-auto font-mono text-xs leading-relaxed" style="background-color: #0d1117; color: #00ff00;"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Use unified bundle (includes both) -->
   <script src="./dist/mafia-utils.js" defer></script>
   <script>
     const output = document.getElementById("output");
+    
+    function formatTerminalOutput(text, type = 'info') {
+      const prompt = '$ ';
+      const colors = {
+        prompt: '#00ff00',
+        success: '#00ff00',
+        error: '#ff0000',
+        info: '#00ffff',
+        warning: '#ffff00',
+        default: '#00ff00',
+        json: '#ffffff'
+      };
+      
+      // Split by lines
+      const lines = text.split('\n');
+      let result = '';
+      
+      lines.forEach((line, index) => {
+        if (index === 0) {
+          // First line gets the prompt
+          result += `<span style="color: ${colors.prompt}">${prompt}</span>`;
+        }
+        
+        if (line.trim() === '') {
+          result += '\n';
+          return;
+        }
+        
+        // Check if line is JSON (starts with { or [ or contains JSON structure)
+        if (line.trim().startsWith('{') || line.trim().startsWith('[') || 
+            line.includes('"') && (line.includes(':') || line.includes(','))) {
+          result += `<span style="color: ${colors.json}">${line}</span>`;
+        }
+        // Check for success indicators
+        else if (line.includes('Done:') || line.includes('Complete!') || line.includes('loaded')) {
+          result += `<span style="color: ${colors.success}">${line}</span>`;
+        }
+        // Check for error indicators
+        else if (line.includes('Error:')) {
+          result += `<span style="color: ${colors.error}">${line}</span>`;
+        }
+        // Check for info indicators
+        else if (line.includes('Loading') || line.includes('Step') || line.includes('Building')) {
+          result += `<span style="color: ${colors.info}">${line}</span>`;
+        }
+        // Default color
+        else {
+          result += `<span style="color: ${colors[type]}">${line}</span>`;
+        }
+        
+        if (index < lines.length - 1) {
+          result += '\n';
+        }
+      });
+      
+      return result;
+    }
+    
+    output.innerHTML = formatTerminalOutput("Welcome! Click any button above to start exploring the BnbMafia SDK.\n\nTip: Results will appear here in real-time.", 'info');
+
+    function setButtonLoading(buttonId, isLoading) {
+      const button = document.getElementById(buttonId);
+      if (isLoading) {
+        button.disabled = true;
+        button.style.opacity = '0.5';
+        button.style.cursor = 'not-allowed';
+        button.style.color = '#00ffff'; // Cyan for loading
+      } else {
+        button.disabled = false;
+        button.style.opacity = '1';
+        button.style.cursor = 'pointer';
+        button.style.color = '#00ff00'; // Green for ready
+      }
+    }
 
     document.getElementById("load-items").addEventListener("click", async () => {
-      output.textContent = "Loading items...";
+      setButtonLoading("load-items", true);
+      const categoryId = parseInt(document.getElementById("category-id").value) || 15;
+      output.innerHTML = formatTerminalOutput(`Loading items (categoryId: ${categoryId})...`, 'info');
       try {
         const items = await window.MafiaInventory.getItemsByCategory({
           chain: "bnb",
-          categoryId: 15,
+          categoryId: categoryId,
           onProgress: (info) => {
-            output.textContent = `Items: ${info.fetched} (batch ${info.batchIndex})...`;
+            output.innerHTML = formatTerminalOutput(`Items: ${info.fetched} (batch ${info.batchIndex})...`, 'info');
           },
         });
-        output.textContent = `Done: ${items.length} items\n\nFirst 2:\n${JSON.stringify(items.slice(0, 2), null, 2)}`;
+        output.innerHTML = formatTerminalOutput(`Done: ${items.length} items\n\nFirst 2:\n${JSON.stringify(items.slice(0, 2), null, 2)}`, 'success');
       } catch (err) {
-        output.textContent = "Error: " + err.message;
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-items", false);
       }
     });
 
     document.getElementById("load-users").addEventListener("click", async () => {
-      output.textContent = "Loading users...";
+      setButtonLoading("load-users", true);
+      output.innerHTML = formatTerminalOutput("Loading users...", 'info');
       try {
         const users = await window.MafiaProfile.getUsersInfo({
           chain: "bnb",
           onProgress: (info) => {
-            output.textContent = `Users: ${info.fetched} (batch ${info.batchIndex})...`;
+            output.innerHTML = formatTerminalOutput(`Users: ${info.fetched} (batch ${info.batchIndex})...`, 'info');
           },
         });
-        output.textContent = `Done: ${users.length} users\n\nFirst 2:\n${JSON.stringify(users.slice(0, 2), null, 2)}`;
+        output.innerHTML = formatTerminalOutput(`Done: ${users.length} users\n\nFirst 2:\n${JSON.stringify(users.slice(0, 2), null, 2)}`, 'success');
       } catch (err) {
-        output.textContent = "Error: " + err.message;
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-users", false);
       }
     });
 
     document.getElementById("load-families-with-players").addEventListener("click", async () => {
-      output.textContent = "Loading families with player info...";
+      setButtonLoading("load-families-with-players", true);
+      output.innerHTML = formatTerminalOutput("Loading families with player info...", 'info');
       try {
         const enrichedFamilies = await window.MafiaFamily.getFamiliesWithPlayers({
           chain: "bnb",
           onProgress: (info) => {
             if (info.step === 'families') {
-              output.textContent = `Loading families... ${info.fetched} families (batch ${info.batchIndex || 0})`;
+              output.innerHTML = formatTerminalOutput(`Loading families... ${info.fetched} families (batch ${info.batchIndex || 0})`, 'info');
             } else {
-              output.textContent = `Loading player info... ${info.fetched} players`;
+              output.innerHTML = formatTerminalOutput(`Loading player info... ${info.fetched} players`, 'info');
             }
           },
         });
 
-        output.textContent = `Done: ${enrichedFamilies.length} families\n\nFirst 3 (with enriched player info):\n${JSON.stringify(
+        output.innerHTML = formatTerminalOutput(`Done: ${enrichedFamilies.length} families\n\nFirst 3 (with enriched player info):\n${JSON.stringify(
           enrichedFamilies.slice(0, 3),
           null,
           2
-        )}`;
+        )}`, 'success');
       } catch (err) {
-        output.textContent = "Error: " + err.message;
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-families-with-players", false);
       }
     });
 
-    document.getElementById("build-dashboard").addEventListener("click", async () => {
-      output.textContent = "Building family dashboard...\n\nStep 1: Loading users...";
+    document.getElementById("load-slots").addEventListener("click", async () => {
+      setButtonLoading("load-slots", true);
+      const cityId = parseInt(document.getElementById("city-id").value) || 1;
+      output.innerHTML = formatTerminalOutput(`Loading slots for city ${cityId}...`, 'info');
       try {
-        // Step 1: Get all users (players) with their profile names
-        const users = await window.MafiaProfile.getUsersInfo({
+        const slots = await window.MafiaMap.getSlots({
           chain: "bnb",
-          maxUsers: 1000, // Limit for demo
-          onProgress: (info) => {
-            output.textContent = `Step 1: Loading users... ${info.fetched} users`;
-          },
+          cityId: cityId,
         });
 
-        output.textContent = `Step 1: Done! ${users.length} users loaded\n\nStep 2: Loading families with player info...`;
-
-        // Step 2: Get all families with enriched player info (leaders & successors)
-        const enrichedFamilies = await window.MafiaFamily.getFamiliesWithPlayers({
-          chain: "bnb",
-          maxFamilies: 100, // Limit for demo
-          onProgress: (info) => {
-            if (info.step === 'families') {
-              output.textContent = `Step 2: Loading families... ${info.fetched} families`;
-            } else {
-              output.textContent = `Step 2: Loading player info... ${info.fetched} players`;
-            }
-          },
+        // Group slots by type for summary
+        const slotsByType = {};
+        slots.forEach((slot) => {
+          const type = slot.slotType;
+          if (!slotsByType[type]) {
+            slotsByType[type] = { count: 0, owned: 0, operating: 0 };
+          }
+          slotsByType[type].count++;
+          if (slot.isOwned) slotsByType[type].owned++;
+          if (slot.isOperating) slotsByType[type].operating++;
         });
 
-        output.textContent = `Step 2: Done! ${enrichedFamilies.length} families loaded\n\nStep 3: Getting player info for all users...`;
-
-        // Step 3: Get player info (which family each player belongs to)
-        const userAddresses = users.map((u) => u.user);
-        const playersInfo = await window.MafiaFamily.getPlayersInfo({
-          chain: "bnb",
-          users: userAddresses,
-        });
-
-        output.textContent = `Step 3: Done! ${playersInfo.length} players info loaded\n\nStep 4: Building dashboard...`;
-
-        // Step 4: Build lookup maps
-        // Map: address -> user profile
-        const userMap = new Map();
-        users.forEach((u) => {
-          userMap.set(u.user.toLowerCase(), u);
-        });
-
-        // Map: address -> player info
-        const playerInfoMap = new Map();
-        playersInfo.forEach((p) => {
-          playerInfoMap.set(p.user.toLowerCase(), p);
-        });
-
-        // Step 5: Build enriched family data (families already have player info, now add profile names)
-        const finalEnrichedFamilies = enrichedFamilies.map((family) => {
-          // Enrich leaders with profile names
-          const enrichedLeaders = family.leaders.map((leader) => {
-            const user = userMap.get(leader.address.toLowerCase());
-            return {
-              ...leader,
-              name: user?.name || "Unknown",
-              isJailed: user?.isJailed || false,
-            };
-          });
-
-          // Enrich successor with profile name
-          const successorUser = userMap.get(family.successor.address.toLowerCase());
-          const enrichedSuccessor = {
-            ...family.successor,
-            name: successorUser?.name || "None",
-          };
-
-          // Get all members of this family
-          const familyMembers = [];
-          playerInfoMap.forEach((playerInfo, playerAddr) => {
-            if (playerInfo.familyId === family.familyId) {
-              const user = userMap.get(playerAddr);
-              familyMembers.push({
-                address: playerAddr,
-                name: user?.name || "Unknown",
-                level: playerInfo.level,
-                isDead: playerInfo.isDead,
-                isJailed: user?.isJailed || false,
-              });
-            }
-          });
-
-          return {
-            familyId: family.familyId,
-            name: family.name,
-            leaders: enrichedLeaders,
-            successor: enrichedSuccessor,
-            leaveFee: family.leaveFee,
-            memberCount: family.memberCount,
-            isDead: family.isDead,
-            members: familyMembers,
-          };
-        });
-
-        // Step 6: Display results
         const summary = {
-          totalUsers: users.length,
-          totalFamilies: enrichedFamilies.length,
-          familiesWithMembers: finalEnrichedFamilies.filter((f) => f.members.length > 0).length,
-          sampleFamilies: finalEnrichedFamilies
-            .filter((f) => f.members.length > 0)
-            .slice(0, 3)
-            .map((f) => ({
-              id: f.familyId,
-              name: f.name,
-              leaders: f.leaders.map((l) => `${l.role}: ${l.name} (${l.address.slice(0, 6)}...)`),
-              memberCount: f.memberCount,
-              actualMembersFound: f.members.length,
-              sampleMembers: f.members.slice(0, 5).map((m) => ({
-                name: m.name,
-                level: m.level,
-                isDead: m.isDead,
-              })),
+          totalSlots: slots.length,
+          slotsByType,
+          sampleSlots: slots
+            .filter((s) => s.isOwned)
+            .slice(0, 5)
+            .map((s) => ({
+              position: `(${s.x},${s.y})`,
+              type: s.slotType,
+              subType: s.slotSubType,
+              owner: s.owner.slice(0, 6) + "...",
+              isOperating: s.isOperating,
+              defensePower: s.defensePower,
             })),
         };
 
-        output.textContent = `✅ Family Dashboard Complete!\n\n${JSON.stringify(summary, null, 2)}\n\nFull data available in console.`;
-        console.log("Enriched Families:", finalEnrichedFamilies);
+        output.innerHTML = formatTerminalOutput(`Done: ${slots.length} slots loaded\n\nSummary:\n${JSON.stringify(summary, null, 2)}`, 'success');
       } catch (err) {
-        output.textContent = "Error: " + err.message;
-        console.error(err);
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-slots", false);
       }
     });
+
   </script>
 </body>
 

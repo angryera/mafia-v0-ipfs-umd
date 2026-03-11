@@ -1,0 +1,113 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint8[]",
+        "name": "cityIds",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "xs",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "ys",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "getSlots",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "slotType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "slotSubType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "variant",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "rarity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isOwned",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isOperating",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "originalDefensePower",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "defensePower",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "boostPercentage",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint48",
+            "name": "nextUpgradeAvailableAt",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "lastOperatingTimestamp",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint256",
+            "name": "inventoryItemId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "familyId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakingAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "yieldPayout",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct MafiaMap.Slot[]",
+        "name": "slots",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "owners",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

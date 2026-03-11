@@ -2,6 +2,8 @@
  * Type declarations for browser bundles.
  * - window.MafiaInventory (mafia-inventory.js or mafia-utils.js)
  * - window.MafiaProfile (mafia-profile.js or mafia-utils.js)
+ * - window.MafiaFamily (mafia-family.js or mafia-utils.js)
+ * - window.MafiaMap (mafia-map.js or mafia-utils.js)
  */
 
 export interface CarType {
@@ -153,11 +155,45 @@ export interface MafiaFamilyAPI {
   getFamiliesWithPlayers(options: GetFamiliesWithPlayersOptions): Promise<EnrichedFamilyInfo[]>;
 }
 
+export interface ParsedSlotInfo {
+  cityId: number;
+  x: number;
+  y: number;
+  slotType: number;
+  slotSubType: number;
+  variant: number;
+  rarity: number;
+  isOwned: boolean;
+  isOperating: boolean;
+  originalDefensePower: number;
+  defensePower: number;
+  boostPercentage: number;
+  nextUpgradeAvailableAt: number;
+  lastOperatingTimestamp: number;
+  inventoryItemId: number;
+  familyId: number;
+  stakingAmount: number;
+  yieldPayout: number;
+  owner: string;
+}
+
+export interface GetSlotsOptions {
+  chain: 'bnb' | 'pulse';
+  contractAddress?: string;
+  cityId: number;
+  rpcUrl?: string;
+}
+
+export interface MafiaMapAPI {
+  getSlots(options: GetSlotsOptions): Promise<ParsedSlotInfo[]>;
+}
+
 declare global {
   interface Window {
     MafiaInventory: MafiaInventoryAPI;
     MafiaProfile: MafiaProfileAPI;
     MafiaFamily: MafiaFamilyAPI;
+    MafiaMap: MafiaMapAPI;
   }
 }
 
