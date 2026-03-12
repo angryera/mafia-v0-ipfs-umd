@@ -8,7 +8,7 @@ import { CONTRACTS } from '../contracts/index.js';
 
 const MAP_WIDTH = 50;
 const MAP_HEIGHT = 30;
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 500;
 
 export interface ParsedSlotInfo {
   cityId: number;

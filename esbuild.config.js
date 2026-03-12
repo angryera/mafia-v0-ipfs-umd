@@ -1,20 +1,10 @@
 /**
- * Browser bundle config - scalable for multiple contracts.
- * Add new entries to BROWSER_BUNDLES to build additional bundles.
+ * Browser bundle config - builds unified bundle with all modules.
+ * The unified bundle includes: MafiaInventory, MafiaProfile, MafiaFamily, MafiaMap
  */
 import esbuild from "esbuild";
 
 const BROWSER_BUNDLES = [
-  {
-    name: "MafiaInventory",
-    entry: "src/browser/mafia-inventory.ts",
-    outfile: "dist/mafia-inventory.js",
-  },
-  {
-    name: "MafiaProfile",
-    entry: "src/browser/mafia-profile.ts",
-    outfile: "dist/mafia-profile.js",
-  },
   {
     entry: "src/browser/index.ts",
     outfile: "dist/mafia-utils.js",
