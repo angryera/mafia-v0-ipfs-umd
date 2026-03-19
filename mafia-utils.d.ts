@@ -43,6 +43,7 @@ export interface MafiaInventoryAPI {
 export interface ParsedUserInfo {
   user: string;
   name: string;
+  referrer: string;
   isJailed: boolean;
   gender: number;
   country: string;

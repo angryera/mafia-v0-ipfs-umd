@@ -17,6 +17,7 @@ export interface UserExtraInfo {
 export interface ParsedUserInfo {
   user: `0x${string}`;
   name: string;
+  referrer: `0x${string}`;
   isJailed: boolean;
   gender: number;
   country: string;
@@ -28,7 +29,8 @@ type GetUsersInfoRaw = readonly [
   readonly string[],
   readonly boolean[],
   readonly { gender: number | bigint; country: string }[],
-  readonly bigint[]
+  readonly bigint[],
+  readonly `0x${string}`[]
 ];
 
 function parseResult(raw: GetUsersInfoRaw): ParsedUserInfo[] {
@@ -37,10 +39,12 @@ function parseResult(raw: GetUsersInfoRaw): ParsedUserInfo[] {
   const isJailed = raw[2] ?? [];
   const extraInfos = raw[3] ?? [];
   const jailedUntil = raw[4] ?? [];
+  const referrers = raw[5] ?? [];
 
   return users.map((user, index) => ({
     user: user as `0x${string}`,
     name: names[index] ?? '',
+    referrer: (referrers[index] ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
     isJailed: isJailed[index] ?? false,
     gender: Number(extraInfos[index]?.gender ?? 0),
     country: extraInfos[index]?.country ?? '',
