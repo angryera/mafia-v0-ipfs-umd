@@ -44,6 +44,13 @@ npm run get-users-info bnb
 npm run get-users-info pulse
 ```
 
+## Fetch OTC Offers (MafiaExchange)
+
+```bash
+npm run get-otc-offers bnb 0 20
+npm run get-otc-offers pulse 0 20
+```
+
 ## Adding a New Contract (Scalable)
 
 1. **Add ABI** in `src/abis/YourContract.json`
@@ -87,7 +94,7 @@ npm run build:browser
 Produces:
 - `dist/mafia-inventory.js` – `window.MafiaInventory`
 - `dist/mafia-profile.js` – `window.MafiaProfile`
-- `dist/mafia-utils.js` – unified (sets `window.MafiaInventory` and `window.MafiaProfile`)
+- `dist/mafia-utils.js` – unified (sets `window.MafiaInventory`, `window.MafiaProfile`, `window.MafiaFamily`, `window.MafiaMap`, `window.MafiaExchange`)
 
 **Unified bundle (recommended):**
 

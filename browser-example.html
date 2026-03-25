@@ -189,6 +189,27 @@
           </div>
         </div>
 
+        <!-- MafiaExchange Card -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">MafiaExchange</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getOTCOffers(start:</span>
+              <input type="number" id="otc-start-index" value="0" class="w-16 text-center cli-input" placeholder="0">
+              <span class="font-mono text-gray-500 text-xs">len:</span>
+              <input type="number" id="otc-length" value="20" class="w-16 text-center cli-input" placeholder="20">
+              <span class="font-mono text-gray-500 text-xs">)</span>
+            </div>
+            <button id="load-otc-offers" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+          </div>
+        </div>
+
       </div>
 
       <!-- Right Column: Terminal Output -->
@@ -397,6 +418,68 @@
         output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
       } finally {
         setButtonLoading("load-slots", false);
+      }
+    });
+
+    document.getElementById("load-otc-offers").addEventListener("click", async () => {
+      setButtonLoading("load-otc-offers", true);
+      const startIndex = parseInt(document.getElementById("otc-start-index").value, 10) || 0;
+      const length = parseInt(document.getElementById("otc-length").value, 10) || 20;
+      output.innerHTML = formatTerminalOutput(`Loading OTC offers (startIndex: ${startIndex}, length: ${length})...`, 'info');
+      try {
+        const offers = await window.MafiaExchange.getOTCOffers({
+          chain: "bnb",
+          startIndex,
+          length,
+        });
+
+        const statusCounts = { open: 0, accepted: 0, canceled: 0 };
+        offers.forEach((offer) => {
+          if (offer.status === 0) statusCounts.open++;
+          else if (offer.status === 1) statusCounts.accepted++;
+          else if (offer.status === 2) statusCounts.canceled++;
+        });
+
+        const detailedOffers = offers.map((offer, idx) => ({
+            index: startIndex + idx,
+            creator: typeof offer.creator === "string" ? offer.creator : "",
+            status: offer.status,
+            createdAt: offer.createdAt,
+            expireAt: offer.expireAt,
+            offeredItems: Array.isArray(offer.offeredItems) ? offer.offeredItems : [],
+            requestedItems: (Array.isArray(offer.requestItems) ? offer.requestItems : []).map((r) => ({
+              itemType: r.itemType,
+              categoryId: r.categoryId,
+              typeId: r.typeId,
+              cityId: r.cityId,
+              x: r.x,
+              y: r.y,
+            })),
+          }));
+
+        const summary = {
+          totalOffers: offers.length,
+          totalOfferItems: offers.reduce((sum, o) => sum + (o.offeredItems?.length ?? 0), 0),
+          statusCounts,
+          offersDetailedPreview: detailedOffers.slice(0, 5).map((o) => ({
+            index: o.index,
+            creator: o.creator ? `${o.creator.slice(0, 10)}...` : "unknown",
+            status: o.status,
+            createdAt: o.createdAt,
+            expireAt: o.expireAt,
+            offeredItems: o.offeredItems.slice(0, 5), // cap preview
+            requestedItems: o.requestedItems.slice(0, 5),
+          })),
+        };
+
+        output.innerHTML = formatTerminalOutput(
+          `Done: OTC offers loaded\n\nSummary:\n${JSON.stringify(summary, null, 2)}`,
+          'success'
+        );
+      } catch (err) {
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-otc-offers", false);
       }
     });
 

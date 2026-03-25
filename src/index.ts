@@ -16,6 +16,13 @@ export type { ChainName } from './core/chains.js';
 // Re-export features
 export { getItemsByCategory } from './features/mafia-inventory/index.js';
 export type { ParsedItemInfo, GetItemsProgress } from './features/mafia-inventory/index.js';
+export { getOTCOffers } from './features/mafia-exchange/index.js';
+export type {
+  OTCRequestItem,
+  OTCOffer,
+  InventoryItem as OTCOfferInventoryItem,
+  OfferedItemDetail,
+} from './features/mafia-exchange/index.js';
 
 // Re-export config for advanced usage
 export { CONTRACT_ADDRESSES, CONTRACT_ABIS } from './config/index.js';

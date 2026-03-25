@@ -29,3 +29,10 @@ export {
   getSlots,
   type ParsedSlotInfo,
 } from './mafia-map/index.js';
+
+export {
+  getOTCOffers,
+  type OTCRequestItem,
+  type OTCOffer,
+  type InventoryItem,
+} from './mafia-exchange/index.js';

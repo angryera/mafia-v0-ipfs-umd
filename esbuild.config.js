@@ -1,6 +1,6 @@
 /**
  * Browser bundle config - builds unified bundle with all modules.
- * The unified bundle includes: MafiaInventory, MafiaProfile, MafiaFamily, MafiaMap
+ * The unified bundle includes: MafiaInventory, MafiaProfile, MafiaFamily, MafiaMap, MafiaExchange
  */
 import esbuild from "esbuild";
 
