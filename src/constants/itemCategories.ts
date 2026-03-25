@@ -1,0 +1,77 @@
+export enum ItemCategory {
+  CASH = 0,
+  BULLET = 1,
+  HEALTH = 2,
+  SHOPITEM = 3,
+  BUSINESS = 4,
+  BODYGUARD = 5,
+  CREDIT = 6,
+  CAR = 7,
+  KEY = 8,
+  KEYITEMS = 9,
+  MAFIA = 10,
+  OGNFT = 11,
+  NOTICREDIT = 12,
+
+  LANDSLOT = 13,
+  BUSINESS_EXTRA = 14,
+
+  CAR_ITEM = 15,
+  FBI_ASSETS = 16,
+
+  PERK_BOX = 17,
+
+  CRIME_SUCCESS = 18,
+  NICK_CAR_SUCCESS = 19,
+  BOOZE_SUCCESS = 20,
+  NARCOTICS_SUCCESS = 21,
+  KILL_SKILL_SUCCESS = 22,
+  BUST_OUT_SUCCESS = 23,
+  CRIME_COOLDOWN = 24,
+  NICK_CAR_COOLDOWN = 25,
+  BOOZE_COOLDOWN = 26,
+  NARCOTICS_COOLDOWN = 27,
+  KILL_SKILL_COOLDOWN = 28,
+  TRAVEL_COOLDOWN = 29,
+  BULLET_BUY_COOLDOWN = 30,
+  HEALTH_BUY_COOLDOWN = 31,
+  BUST_OUT_COOLDOWN = 32,
+  MAP_YIELD_BOOS = 33,
+  RACE_XP_BOOST = 34,
+  KILL_SKILL_XP_BOOST = 35,
+  BUST_OUT_XP_BOOST = 36,
+  SALES_PRICE_NARCOTICS_BOOST = 37,
+  SALES_PRICE_BOOZE_BOOST = 38,
+  WORTH_BOOST = 39,
+  REWARDS_BOOST = 40,
+  PURCHASE_BOOST = 41,
+  NO_JAIL_BOOST = 42,
+  FREE_TRAVEL_BOOST = 43,
+  BANK_FEE_BOOST = 44,
+  CREDIT_COST_BOOST = 45,
+  CONVERSION_RATE_BOOST = 46,
+  CREDIT_SPEND_BOOST = 47,
+
+  BODYGUARD_JOHNNY = 48,
+  BODYGUARD_JIM = 49,
+  BODYGUARD_SAM = 50,
+  BODYGUARD_FRANK = 51,
+
+  SUBSCRIPTION_ITEM = 52,
+  GI_CREDIT = 53,
+
+  MYSTERY_BOX = 54,
+
+  BOOZE_PACK = 55,
+  NARCS_PACK = 56,
+}
+
+/**
+ * Category IDs to iterate when scanning all items.
+ * Excludes FBI_ASSETS (16) and CAR_ITEM (15).
+ */
+export const ITEM_CATEGORY_IDS_TO_SCAN: readonly number[] = Object.values(ItemCategory)
+  .filter((v): v is number => typeof v === 'number')
+  .filter((id) => id !== ItemCategory.FBI_ASSETS && id !== ItemCategory.CAR_ITEM)
+  .sort((a, b) => a - b);
+

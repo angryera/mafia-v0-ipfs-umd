@@ -25,6 +25,7 @@ if (typeof window !== 'undefined') {
 
 export { MafiaInventory, MafiaProfile, MafiaFamily, MafiaMap, MafiaExchange };
 export { getItemsByCategory } from './mafia-inventory.js';
+export { getAllItemsByOwner } from './mafia-inventory.js';
 export { getUsersInfo } from './mafia-profile.js';
 export { getFamilies, getPlayersInfo, getFamiliesWithPlayers } from './mafia-family.js';
 export { getSlots } from './mafia-map.js';

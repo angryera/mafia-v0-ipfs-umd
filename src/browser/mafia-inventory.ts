@@ -6,6 +6,7 @@ import type { Abi } from 'viem';
 import { createBrowserClient } from './shared.js';
 import { CONTRACTS, getContractAbi } from '../contracts/index.js';
 import { CarsList } from '../constants/cars.js';
+import { ITEM_CATEGORY_IDS_TO_SCAN } from '../constants/itemCategories.js';
 
 const CAR_CATEGORY_ID = 15;
 const CHUNK_SIZE = 100;
@@ -39,6 +40,20 @@ export interface GetItemsByCategoryOptions {
   maxItems?: number;
   rpcUrl?: string;
   onProgress?: (info: { fetched: number; batchIndex: number }) => void;
+}
+
+export interface GetAllItemsByOwnerOptions {
+  chain: 'bnb' | 'pulse';
+  owner: string;
+  maxItemsPerCategory?: number;
+  rpcUrl?: string;
+  onProgress?: (info: {
+    categoryId: number;
+    categoryIndex: number;
+    categoryCount: number;
+    fetchedCategoryItems: number;
+    matchedOwnerItems: number;
+  }) => void;
 }
 
 type GetItemsByCategoryRaw = readonly [
@@ -173,4 +188,57 @@ export async function getItemsByCategory(options: GetItemsByCategoryOptions): Pr
   });
 }
 
-export const MafiaInventory = { getItemsByCategory };
+export async function getAllItemsByOwner(options: GetAllItemsByOwnerOptions): Promise<ParsedItemInfo[]> {
+  const {
+    chain,
+    owner,
+    maxItemsPerCategory = 100_000,
+    rpcUrl,
+    onProgress,
+  } = options;
+
+  if (chain === 'pulse') {
+    throw new Error(
+      'getAllItemsByOwner is only available on BNB (MafiaInventory.getItemsByCategory). PulseChain does not have this function.'
+    );
+  }
+
+  const ownerLc = String(owner).toLowerCase();
+  const matched: ParsedItemInfo[] = [];
+
+  for (let i = 0; i < ITEM_CATEGORY_IDS_TO_SCAN.length; i++) {
+    const categoryId = ITEM_CATEGORY_IDS_TO_SCAN[i] ?? 0;
+
+    const items = await getItemsByCategory({
+      chain,
+      categoryId,
+      maxItems: maxItemsPerCategory,
+      rpcUrl,
+      onProgress: (info) => {
+        onProgress?.({
+          categoryId,
+          categoryIndex: i,
+          categoryCount: ITEM_CATEGORY_IDS_TO_SCAN.length,
+          fetchedCategoryItems: info.fetched,
+          matchedOwnerItems: matched.length,
+        });
+      },
+    });
+
+    for (const item of items) {
+      if (String(item.owner).toLowerCase() === ownerLc) matched.push(item);
+    }
+
+    onProgress?.({
+      categoryId,
+      categoryIndex: i,
+      categoryCount: ITEM_CATEGORY_IDS_TO_SCAN.length,
+      fetchedCategoryItems: items.length,
+      matchedOwnerItems: matched.length,
+    });
+  }
+
+  return matched;
+}
+
+export const MafiaInventory = { getItemsByCategory, getAllItemsByOwner };

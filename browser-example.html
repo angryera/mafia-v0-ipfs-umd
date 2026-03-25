@@ -136,6 +136,25 @@
           </div>
         </div>
 
+        <!-- MafiaInventory (All Items By Owner) Card -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">MafiaInventory</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getAllItemsByOwner(owner:</span>
+              <input type="text" id="owner-address" value="" class="w-full cli-input" placeholder="0x...">
+              <span class="font-mono text-gray-500 text-xs">)</span>
+            </div>
+            <button id="load-items-by-owner" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+          </div>
+        </div>
+
         <!-- MafiaProfile Card -->
         <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
           <div class="flex flex-col gap-1.5">
@@ -327,6 +346,42 @@
         output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
       } finally {
         setButtonLoading("load-items", false);
+      }
+    });
+
+    document.getElementById("load-items-by-owner").addEventListener("click", async () => {
+      setButtonLoading("load-items-by-owner", true);
+      const owner = (document.getElementById("owner-address").value || "").trim();
+      if (!owner || !owner.startsWith("0x")) {
+        output.innerHTML = formatTerminalOutput("Error: Please enter a valid owner address (0x...)", 'error');
+        setButtonLoading("load-items-by-owner", false);
+        return;
+      }
+
+      output.innerHTML = formatTerminalOutput(`Loading all items for owner ${owner} (BNB only)...`, 'info');
+      try {
+        const items = await window.MafiaInventory.getAllItemsByOwner({
+          chain: "bnb",
+          owner,
+          onProgress: (p) => {
+            output.innerHTML = formatTerminalOutput(
+              `Scanning category ${p.categoryId} (${p.categoryIndex + 1}/${p.categoryCount})... ` +
+              `fetched=${p.fetchedCategoryItems}, matched=${p.matchedOwnerItems}`,
+              'info'
+            );
+          },
+        });
+
+        console.log(items);
+
+        output.innerHTML = formatTerminalOutput(
+          `Done: ${items.length} items matched\n\nFirst 10:\n${JSON.stringify(items.slice(0, 10), null, 2)}`,
+          'success'
+        );
+      } catch (err) {
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-items-by-owner", false);
       }
     });
 
