@@ -39,6 +39,20 @@ export interface GetSlotsOptions {
   rpcUrl?: string;
 }
 
+export interface GetLandSlotsByOwnerOptions {
+  chain: 'bnb' | 'pulse';
+  owner: string;
+  cityIds: readonly number[];
+  requireInventoryItem?: boolean;
+  rpcUrl?: string;
+  onProgress?: (info: {
+    cityId: number;
+    cityIndex: number;
+    cityCount: number;
+    matchedSlots: number;
+  }) => void;
+}
+
 type RawSlot = {
   slotType: number | bigint;
   slotSubType: number | bigint;
@@ -135,4 +149,36 @@ export async function getSlots(options: GetSlotsOptions): Promise<ParsedSlotInfo
   return allSlots;
 }
 
-export const MafiaMap = { getSlots };
+export async function getLandSlotsByOwner(options: GetLandSlotsByOwnerOptions): Promise<ParsedSlotInfo[]> {
+  const {
+    chain,
+    owner,
+    cityIds,
+    requireInventoryItem = true,
+    rpcUrl,
+    onProgress,
+  } = options;
+
+  const ownerLc = String(owner).toLowerCase();
+  const result: ParsedSlotInfo[] = [];
+
+  for (let i = 0; i < cityIds.length; i++) {
+    const cityId = cityIds[i] ?? 0;
+    const slots = await getSlots({ chain, cityId, rpcUrl });
+    for (const slot of slots) {
+      if (String(slot.owner).toLowerCase() !== ownerLc) continue;
+      if (requireInventoryItem && Number(slot.inventoryItemId ?? 0) === 0) continue;
+      result.push(slot);
+    }
+    onProgress?.({
+      cityId,
+      cityIndex: i,
+      cityCount: cityIds.length,
+      matchedSlots: result.length,
+    });
+  }
+
+  return result;
+}
+
+export const MafiaMap = { getSlots, getLandSlotsByOwner };

@@ -208,6 +208,25 @@
           </div>
         </div>
 
+        <!-- MafiaMap (Land Slots By Owner) Card -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">MafiaMap</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getLandSlotsByOwner(owner:</span>
+              <input type="text" id="land-owner-address" value="" class="w-full cli-input" placeholder="0x...">
+              <span class="font-mono text-gray-500 text-xs">)</span>
+            </div>
+            <button id="load-land-slots-by-owner" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+          </div>
+        </div>
+
         <!-- MafiaExchange Card -->
         <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
           <div class="flex flex-col gap-1.5">
@@ -476,6 +495,59 @@
       }
     });
 
+    document.getElementById("load-land-slots-by-owner").addEventListener("click", async () => {
+      setButtonLoading("load-land-slots-by-owner", true);
+      const owner = (document.getElementById("land-owner-address").value || "").trim();
+      
+      // "All cities" for the demo page: adjust this if the game adds more cities.
+      const ALL_CITY_IDS = Array.from({ length: 11 }, (_, i) => i); // 0..10
+
+      if (!owner || !owner.startsWith("0x")) {
+        output.innerHTML = formatTerminalOutput("Error: Please enter a valid owner address (0x...)", 'error');
+        setButtonLoading("load-land-slots-by-owner", false);
+        return;
+      }
+
+      output.innerHTML = formatTerminalOutput(
+        `Scanning land slots for owner ${owner} across cities: ${ALL_CITY_IDS.join(", ")}...`,
+        'info'
+      );
+      try {
+        const slots = await window.MafiaMap.getLandSlotsByOwner({
+          chain: "bnb",
+          owner,
+          cityIds: ALL_CITY_IDS,
+          requireInventoryItem: true,
+          onProgress: (p) => {
+            output.innerHTML = formatTerminalOutput(
+              `City ${p.cityId} (${p.cityIndex + 1}/${p.cityCount})... matched=${p.matchedSlots}`,
+              'info'
+            );
+          },
+        });
+
+        const summary = {
+          total: slots.length,
+          sample: slots.slice(0, 10).map((s) => ({
+            cityId: s.cityId,
+            x: s.x,
+            y: s.y,
+            inventoryItemId: s.inventoryItemId,
+            owner: (s.owner || '').slice(0, 10) + '...',
+          })),
+        };
+
+        output.innerHTML = formatTerminalOutput(
+          `Done: ${slots.length} land slots matched\n\nSummary:\n${JSON.stringify(summary, null, 2)}`,
+          'success'
+        );
+      } catch (err) {
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-land-slots-by-owner", false);
+      }
+    });
+
     document.getElementById("load-otc-offers").addEventListener("click", async () => {
       setButtonLoading("load-otc-offers", true);
       const startIndex = parseInt(document.getElementById("otc-start-index").value, 10) || 0;
@@ -487,6 +559,7 @@
           startIndex,
           length,
         });
+        console.log(offers);
 
         const statusCounts = { open: 0, accepted: 0, canceled: 0 };
         offers.forEach((offer) => {

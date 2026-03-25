@@ -22,6 +22,12 @@ export type {
   GetAllItemsByOwnerOptions,
   GetAllItemsByOwnerProgress,
 } from './features/mafia-inventory/index.js';
+export { getSlots } from './features/mafia-map/index.js';
+export { getLandSlotsByOwner } from './features/mafia-map/getLandSlotsByOwner.js';
+export type {
+  ParsedSlotInfo,
+} from './features/mafia-map/index.js';
+export type { GetLandSlotsByOwnerOptions, GetLandSlotsByOwnerProgress } from './features/mafia-map/getLandSlotsByOwner.js';
 export { getOTCOffers } from './features/mafia-exchange/index.js';
 export type {
   OTCRequestItem,

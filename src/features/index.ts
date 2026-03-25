@@ -30,6 +30,9 @@ export {
   type ParsedSlotInfo,
 } from './mafia-map/index.js';
 
+export { getLandSlotsByOwner } from './mafia-map/getLandSlotsByOwner.js';
+export type { GetLandSlotsByOwnerOptions, GetLandSlotsByOwnerProgress } from './mafia-map/getLandSlotsByOwner.js';
+
 export {
   getOTCOffers,
   type OTCRequestItem,

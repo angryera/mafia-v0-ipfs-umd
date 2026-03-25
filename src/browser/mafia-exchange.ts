@@ -137,6 +137,7 @@ export async function getOTCOffers(options: GetOTCOffersOptions): Promise<OTCOff
     functionName: 'getOTCOffers',
     args: [BigInt(startIndex), BigInt(length)],
   })) as unknown as GetOTCOffersRaw;
+  console.log(raw);
 
   const list = (raw[0] ?? []).map(parseOffer);
   const offerItems = (raw[1] ?? []).map(parseInventoryItem);
