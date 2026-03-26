@@ -17,6 +17,7 @@
     "get-slots": "tsx src/cli/get-slots.ts",
     "get-land-slots-by-owner": "tsx src/cli/get-land-slots-by-owner.ts",
     "get-otc-offers": "tsx src/cli/get-otc-offers.ts",
+    "get-xp-listings": "tsx src/cli/get-xp-listings.ts",
     "build:browser": "node esbuild.config.js",
     "build:browser:inventory": "npx esbuild src/browser/mafia-inventory.ts --bundle --minify --outfile=dist/mafia-inventory.js --format=iife --global-name=MafiaInventory",
     "build:browser:profile": "npx esbuild src/browser/mafia-profile.ts --bundle --minify --outfile=dist/mafia-profile.js --format=iife --global-name=MafiaProfile"

@@ -9,6 +9,7 @@ import mafiaProfileAbi from '../abis/MafiaProfile.json' with { type: 'json' };
 import mafiaFamilyAbi from '../abis/MafiaFamily.json' with { type: 'json' };
 import mafiaMapAbi from '../abis/MafiaMap.json' with { type: 'json' };
 import mafiaExchangeAbi from '../abis/MafiaExchange.json' with { type: 'json' };
+import xpMarketAbi from '../abis/XPMarket.json' with { type: 'json' };
 
 export type ChainName = 'bnb' | 'pulse';
 
@@ -65,6 +66,13 @@ export const CONTRACTS = {
       pulse: '0x11ee2732eD4C6BFe673e7b4BE15ece35D6a8cCD7' as `0x${string}`,
     },
     abi: mafiaExchangeAbi as Abi,
+  },
+  XpMarket: {
+    addresses: {
+      bnb: '0x49F23822AFa248D4bE453d630F7e0dF8fcF80854' as `0x${string}`,
+      pulse: '0xc5731c6C3627F4912B54A2c6e13A8BFaeD69A39C' as `0x${string}`,
+    },
+    abi: xpMarketAbi as Abi,
   },
 } as const satisfies Record<string, ContractConfig>;
 

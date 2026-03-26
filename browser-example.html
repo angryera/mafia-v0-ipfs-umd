@@ -47,39 +47,49 @@
       font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
       background-color: #0d1117;
     }
+
     pre {
       white-space: pre-wrap;
       word-wrap: break-word;
     }
+
     .terminal-line::before {
       content: '$ ';
       color: #00ff00;
     }
+
     .terminal-success {
       color: #00ff00;
     }
+
     .terminal-error {
       color: #ff0000;
     }
+
     .terminal-info {
       color: #00ffff;
     }
+
     .terminal-warning {
       color: #ffff00;
     }
+
     .cli-button {
       color: #00ff00;
       transition: all 0.2s;
       background-color: transparent;
     }
+
     .cli-button:hover:not(:disabled) {
       color: #00ffff;
       border-color: #00ffff;
     }
+
     .cli-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
+
     .cli-input {
       background-color: #161b22;
       border: 1px solid #30363d;
@@ -89,11 +99,13 @@
       padding: 0.25rem 0.5rem;
       border-radius: 0.25rem;
     }
+
     .cli-input:focus {
       outline: none;
       border-color: #00ffff;
       color: #00ffff;
     }
+
     .cli-input::placeholder {
       color: #6e7681;
     }
@@ -130,7 +142,8 @@
               <input type="number" id="category-id" value="15" class="w-16 text-center cli-input" placeholder="15">
               <span class="font-mono text-gray-500 text-xs">)</span>
             </div>
-            <button id="load-items" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+            <button id="load-items"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
               Execute
             </button>
           </div>
@@ -149,7 +162,8 @@
               <input type="text" id="owner-address" value="" class="w-full cli-input" placeholder="0x...">
               <span class="font-mono text-gray-500 text-xs">)</span>
             </div>
-            <button id="load-items-by-owner" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+            <button id="load-items-by-owner"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
               Execute
             </button>
           </div>
@@ -166,7 +180,8 @@
               <span class="font-mono text-green-400 text-xs">→</span>
               <span class="font-mono text-gray-500 text-xs">getUsersInfo()</span>
             </div>
-            <button id="load-users" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+            <button id="load-users"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
               Execute
             </button>
           </div>
@@ -183,7 +198,8 @@
               <span class="font-mono text-green-400 text-xs">→</span>
               <span class="font-mono text-gray-500 text-xs">getFamiliesWithPlayers()</span>
             </div>
-            <button id="load-families-with-players" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+            <button id="load-families-with-players"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
               Execute
             </button>
           </div>
@@ -202,7 +218,8 @@
               <input type="number" id="city-id" value="1" class="w-16 text-center cli-input" placeholder="1">
               <span class="font-mono text-gray-500 text-xs">)</span>
             </div>
-            <button id="load-slots" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+            <button id="load-slots"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
               Execute
             </button>
           </div>
@@ -221,7 +238,8 @@
               <input type="text" id="land-owner-address" value="" class="w-full cli-input" placeholder="0x...">
               <span class="font-mono text-gray-500 text-xs">)</span>
             </div>
-            <button id="load-land-slots-by-owner" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+            <button id="load-land-slots-by-owner"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
               Execute
             </button>
           </div>
@@ -242,7 +260,30 @@
               <input type="number" id="otc-length" value="20" class="w-16 text-center cli-input" placeholder="20">
               <span class="font-mono text-gray-500 text-xs">)</span>
             </div>
-            <button id="load-otc-offers" class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+            <button id="load-otc-offers"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+          </div>
+        </div>
+
+        <!-- XpMarket Card -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">XpMarket</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getXpListings(start:</span>
+              <input type="number" id="xp-start-index" value="0" class="w-16 text-center cli-input" placeholder="0">
+              <span class="font-mono text-gray-500 text-xs">len:</span>
+              <input type="number" id="xp-length" value="20" class="w-16 text-center cli-input" placeholder="20">
+              <span class="font-mono text-gray-500 text-xs">)</span>
+            </div>
+            <button id="load-xp-listings"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
               Execute
             </button>
           </div>
@@ -252,7 +293,8 @@
 
       <!-- Right Column: Terminal Output -->
       <div class="lg:col-span-9">
-        <div class="top-4 sticky shadow-lg border border-dark-700 rounded-lg h-full overflow-hidden" style="background-color: #0d1117;">
+        <div class="top-4 sticky shadow-lg border border-dark-700 rounded-lg h-full overflow-hidden"
+          style="background-color: #0d1117;">
           <!-- Terminal Header -->
           <div class="flex items-center gap-2 bg-dark-900 px-4 py-2 border-dark-700 border-b">
             <div class="flex gap-1.5">
@@ -263,7 +305,9 @@
             <span class="ml-2 font-mono text-gray-400 text-xs">terminal</span>
           </div>
           <!-- Terminal Content -->
-          <pre id="output" class="p-4 min-h-[500px] max-h-[calc(100vh-180px)] overflow-auto font-mono text-xs leading-relaxed" style="background-color: #0d1117; color: #00ff00;"></pre>
+          <pre id="output"
+            class="p-4 min-h-[500px] max-h-[calc(100vh-180px)] overflow-auto font-mono text-xs leading-relaxed"
+            style="background-color: #0d1117; color: #00ff00;"></pre>
         </div>
       </div>
     </div>
@@ -273,7 +317,7 @@
   <script src="./dist/mafia-utils.js" defer></script>
   <script>
     const output = document.getElementById("output");
-    
+
     function formatTerminalOutput(text, type = 'info') {
       const prompt = '$ ';
       const colors = {
@@ -285,25 +329,25 @@
         default: '#00ff00',
         json: '#ffffff'
       };
-      
+
       // Split by lines
       const lines = text.split('\n');
       let result = '';
-      
+
       lines.forEach((line, index) => {
         if (index === 0) {
           // First line gets the prompt
           result += `<span style="color: ${colors.prompt}">${prompt}</span>`;
         }
-        
+
         if (line.trim() === '') {
           result += '\n';
           return;
         }
-        
+
         // Check if line is JSON (starts with { or [ or contains JSON structure)
-        if (line.trim().startsWith('{') || line.trim().startsWith('[') || 
-            line.includes('"') && (line.includes(':') || line.includes(','))) {
+        if (line.trim().startsWith('{') || line.trim().startsWith('[') ||
+          line.includes('"') && (line.includes(':') || line.includes(','))) {
           result += `<span style="color: ${colors.json}">${line}</span>`;
         }
         // Check for success indicators
@@ -322,15 +366,15 @@
         else {
           result += `<span style="color: ${colors[type]}">${line}</span>`;
         }
-        
+
         if (index < lines.length - 1) {
           result += '\n';
         }
       });
-      
+
       return result;
     }
-    
+
     output.innerHTML = formatTerminalOutput("Welcome! Click any button above to start exploring the BnbMafia SDK.\n\nTip: Results will appear here in real-time.", 'info');
 
     function setButtonLoading(buttonId, isLoading) {
@@ -498,7 +542,7 @@
     document.getElementById("load-land-slots-by-owner").addEventListener("click", async () => {
       setButtonLoading("load-land-slots-by-owner", true);
       const owner = (document.getElementById("land-owner-address").value || "").trim();
-      
+
       // "All cities" for the demo page: adjust this if the game adds more cities.
       const ALL_CITY_IDS = Array.from({ length: 11 }, (_, i) => i); // 0..10
 
@@ -559,7 +603,6 @@
           startIndex,
           length,
         });
-        console.log(offers);
 
         const statusCounts = { open: 0, accepted: 0, canceled: 0 };
         offers.forEach((offer) => {
@@ -569,21 +612,21 @@
         });
 
         const detailedOffers = offers.map((offer, idx) => ({
-            index: startIndex + idx,
-            creator: typeof offer.creator === "string" ? offer.creator : "",
-            status: offer.status,
-            createdAt: offer.createdAt,
-            expireAt: offer.expireAt,
-            offeredItems: Array.isArray(offer.offeredItems) ? offer.offeredItems : [],
-            requestedItems: (Array.isArray(offer.requestItems) ? offer.requestItems : []).map((r) => ({
-              itemType: r.itemType,
-              categoryId: r.categoryId,
-              typeId: r.typeId,
-              cityId: r.cityId,
-              x: r.x,
-              y: r.y,
-            })),
-          }));
+          index: startIndex + idx,
+          creator: typeof offer.creator === "string" ? offer.creator : "",
+          status: offer.status,
+          createdAt: offer.createdAt,
+          expireAt: offer.expireAt,
+          offeredItems: Array.isArray(offer.offeredItems) ? offer.offeredItems : [],
+          requestedItems: (Array.isArray(offer.requestItems) ? offer.requestItems : []).map((r) => ({
+            itemType: r.itemType,
+            categoryId: r.categoryId,
+            typeId: r.typeId,
+            cityId: r.cityId,
+            x: r.x,
+            y: r.y,
+          })),
+        }));
 
         const summary = {
           totalOffers: offers.length,
@@ -608,6 +651,59 @@
         output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
       } finally {
         setButtonLoading("load-otc-offers", false);
+      }
+    });
+
+    document.getElementById("load-xp-listings").addEventListener("click", async () => {
+      setButtonLoading("load-xp-listings", true);
+      const startIndex = parseInt(document.getElementById("xp-start-index").value, 10) || 0;
+      const length = parseInt(document.getElementById("xp-length").value, 10) || 20;
+      output.innerHTML = formatTerminalOutput(`Loading XP listings (startIndex: ${startIndex}, length: ${length})...`, 'info');
+      try {
+        const listings = await window.XpMarket.getXpListings({
+          chain: "bnb",
+          startIndex,
+          length,
+        });
+
+        const statusCounts = { active: 0, sold: 0, cancelled: 0 };
+        listings.forEach((item) => {
+          if (item.status === 0) statusCounts.active++;
+          else if (item.status === 1) statusCounts.sold++;
+          else if (item.status === 2) statusCounts.cancelled++;
+        });
+
+        const summary = {
+          totalListings: listings.length,
+          statusCounts,
+          sampleListings: listings.slice(0, 20).map((item) => ({
+            id: item.id,
+            xpType: item.xpType,
+            listingType: item.listingType,
+            status: item.status,
+            xpPoint: item.xpPoint,
+            owner: (item.owner || '').slice(0, 10) + '...',
+            buyer: (item.buyer || '').slice(0, 10) + '...',
+            startPrice: item.startPrice,
+            currentPrice: item.currentPrice,
+            endTimestamp: item.endTimestamp,
+            bidsCount: Array.isArray(item.bids) ? item.bids.length : 0,
+            bids: Array.isArray(item.bids) ? item.bids.map((bid) => ({
+              bidder: bid.bidder,
+              price: bid.price,
+              timestamp: bid.timestamp,
+            })) : [],
+          })),
+        };
+
+        output.innerHTML = formatTerminalOutput(
+          `Done: XP listings loaded\n\nSummary:\n${JSON.stringify(summary, null, 2)}`,
+          'success'
+        );
+      } catch (err) {
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-xp-listings", false);
       }
     });
 

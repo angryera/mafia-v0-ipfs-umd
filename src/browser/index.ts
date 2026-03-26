@@ -6,6 +6,7 @@ import { MafiaProfile } from './mafia-profile.js';
 import { MafiaFamily } from './mafia-family.js';
 import { MafiaMap } from './mafia-map.js';
 import { MafiaExchange } from './mafia-exchange.js';
+import { XpMarket } from './xp-market.js';
 
 declare const window: Window & {
   MafiaInventory?: unknown;
@@ -13,6 +14,7 @@ declare const window: Window & {
   MafiaFamily?: unknown;
   MafiaMap?: unknown;
   MafiaExchange?: unknown;
+  XpMarket?: unknown;
 };
 
 if (typeof window !== 'undefined') {
@@ -21,12 +23,14 @@ if (typeof window !== 'undefined') {
   window.MafiaFamily = MafiaFamily;
   window.MafiaMap = MafiaMap;
   window.MafiaExchange = MafiaExchange;
+  window.XpMarket = XpMarket;
 }
 
-export { MafiaInventory, MafiaProfile, MafiaFamily, MafiaMap, MafiaExchange };
+export { MafiaInventory, MafiaProfile, MafiaFamily, MafiaMap, MafiaExchange, XpMarket };
 export { getItemsByCategory } from './mafia-inventory.js';
 export { getAllItemsByOwner } from './mafia-inventory.js';
 export { getUsersInfo } from './mafia-profile.js';
 export { getFamilies, getPlayersInfo, getFamiliesWithPlayers } from './mafia-family.js';
 export { getSlots } from './mafia-map.js';
 export { getOTCOffers } from './mafia-exchange.js';
+export { getXpListings } from './xp-market.js';
