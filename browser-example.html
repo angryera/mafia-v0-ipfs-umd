@@ -289,6 +289,27 @@
           </div>
         </div>
 
+        <!-- MafiaInventoryMarketplace Card -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">MafiaInventoryMarketplace</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getActiveListings(pageSize:</span>
+              <input type="number" id="marketplace-page-size" value="200" class="w-20 text-center cli-input"
+                placeholder="200">
+              <span class="font-mono text-gray-500 text-xs">)</span>
+            </div>
+            <button id="load-marketplace-active-listings"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+          </div>
+        </div>
+
       </div>
 
       <!-- Right Column: Terminal Output -->
@@ -704,6 +725,54 @@
         output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
       } finally {
         setButtonLoading("load-xp-listings", false);
+      }
+    });
+
+    document.getElementById("load-marketplace-active-listings").addEventListener("click", async () => {
+      setButtonLoading("load-marketplace-active-listings", true);
+      const pageSize = parseInt(document.getElementById("marketplace-page-size").value, 10) || 200;
+      output.innerHTML = formatTerminalOutput(`Loading marketplace active listings (pageSize: ${pageSize})...`, 'info');
+      try {
+        const listings = await window.MafiaInventoryMarketplace.getActiveListings({
+          chain: "bnb",
+          pageSize,
+        });
+
+        const list = Array.isArray(listings) ? listings : [];
+
+        const statusCounts = { open: 0, sold: 0, canceled: 0 };
+        list.forEach((l) => {
+          if (l.status === 0) statusCounts.open++;
+          else if (l.status === 1) statusCounts.sold++;
+          else if (l.status === 2) statusCounts.canceled++;
+        });
+
+        const summary = {
+          listings: list.length,
+          statusCounts,
+          sample: list.slice(0, 5).map((l) => ({
+            itemId: l.itemId,
+            item: { categoryId: l.item.categoryId, typeId: l.item.typeId, owner: (l.item.owner || '').slice(0, 10) + '...' },
+            listingType: l.listingType,
+            status: l.status,
+            startingPrice: l.startingPrice,
+            currentPrice: l.currentPrice,
+            expiresAt: l.expiresAt,
+            token: (l.token || '').slice(0, 10) + '...',
+            seller: (l.seller || '').slice(0, 10) + '...',
+            buyer: (l.buyer || '').slice(0, 10) + '...',
+            bidsCount: Array.isArray(l.bids) ? l.bids.length : 0,
+          })),
+        };
+
+        output.innerHTML = formatTerminalOutput(
+          `Done: Marketplace active listings loaded\n\nSummary:\n${JSON.stringify(summary, null, 2)}`,
+          'success'
+        );
+      } catch (err) {
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-marketplace-active-listings", false);
       }
     });
 

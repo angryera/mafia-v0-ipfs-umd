@@ -35,6 +35,12 @@ export type {
   InventoryItem as OTCOfferInventoryItem,
   OfferedItemDetail,
 } from './features/mafia-exchange/index.js';
+export { getActiveListings as getInventoryMarketplaceActiveListings } from './features/inventory-marketplace/index.js';
+export type {
+  MarketplaceListing as InventoryMarketplaceListing,
+  MarketplaceBid as InventoryMarketplaceBid,
+  InventoryItem as InventoryMarketplaceItem,
+} from './features/inventory-marketplace/index.js';
 
 // Re-export config for advanced usage
 export { CONTRACT_ADDRESSES, CONTRACT_ABIS } from './config/index.js';

@@ -36,6 +36,13 @@ export type { GetLandSlotsByOwnerOptions, GetLandSlotsByOwnerProgress } from './
 export { getListings as getXpListings } from './xp-market/getListings.js';
 export type { XpMarketItem, XpBid } from './xp-market/getListings.js';
 
+export { getActiveListings as getInventoryMarketplaceActiveListings } from './inventory-marketplace/getActiveListings.js';
+export type {
+  MarketplaceListing,
+  MarketplaceBid,
+  InventoryItem as InventoryMarketplaceItem,
+} from './inventory-marketplace/getActiveListings.js';
+
 export {
   getOTCOffers,
   type OTCRequestItem,
