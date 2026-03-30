@@ -43,6 +43,9 @@ export type {
   InventoryItem as InventoryMarketplaceItem,
 } from './inventory-marketplace/getActiveListings.js';
 
+export { getRaces } from './race-lobby/index.js';
+export type { RaceInfo } from './race-lobby/index.js';
+
 export {
   getOTCOffers,
   type OTCRequestItem,

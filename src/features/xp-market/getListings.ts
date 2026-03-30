@@ -2,6 +2,8 @@ import { getClient } from '../../core/chains.js';
 import { CONTRACTS } from '../../contracts/index.js';
 import type { ChainName } from '../../contracts/index.js';
 
+const DEFAULT_PAGE_SIZE = 200;
+
 export interface XpBid {
   bidder: `0x${string}`;
   price: bigint;
@@ -78,20 +80,30 @@ function parseItem(raw: RawItem): XpMarketItem {
 
 export async function getListings(
   chain: ChainName,
-  startIndex: number,
-  length: number
+  pageSize = DEFAULT_PAGE_SIZE
 ): Promise<XpMarketItem[]> {
   const client = getClient(chain);
   const address = CONTRACTS.XpMarket.addresses[chain];
   const abi = CONTRACTS.XpMarket.abi;
 
-  const raw = (await client.readContract({
-    address,
-    abi,
-    functionName: 'getListings',
-    args: [BigInt(startIndex), BigInt(length)],
-  })) as unknown as GetListingsRaw;
+  const all: XpMarketItem[] = [];
+  let startIndex = 0;
 
-  return normalizeListings(raw).map(parseItem);
+  while (true) {
+    const raw = (await client.readContract({
+      address,
+      abi,
+      functionName: 'getListings',
+      args: [BigInt(startIndex), BigInt(pageSize)],
+    })) as unknown as GetListingsRaw;
+
+    const page = normalizeListings(raw).map(parseItem);
+    if (page.length === 0) break;
+    all.push(...page);
+    if (page.length < pageSize) break;
+    startIndex += pageSize;
+  }
+
+  return all;
 }
 

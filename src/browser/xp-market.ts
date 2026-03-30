@@ -2,6 +2,8 @@ import type { Abi } from 'viem';
 import { createBrowserClient } from './shared.js';
 import { CONTRACTS } from '../contracts/index.js';
 
+const DEFAULT_PAGE_SIZE = 200;
+
 export interface XpBid {
   bidder: string;
   price: string; // as decimal string (from bigint)
@@ -25,8 +27,7 @@ export interface XpMarketItem {
 
 export interface GetXpListingsOptions {
   chain: 'bnb' | 'pulse';
-  startIndex: number;
-  length: number;
+  pageSize?: number;
   contractAddress?: string;
   rpcUrl?: string;
 }
@@ -91,8 +92,7 @@ function parseItem(raw: RawItem): XpMarketItem {
 export async function getXpListings(options: GetXpListingsOptions): Promise<XpMarketItem[]> {
   const {
     chain,
-    startIndex,
-    length,
+    pageSize = DEFAULT_PAGE_SIZE,
     contractAddress: customAddress,
     rpcUrl,
   } = options;
@@ -100,14 +100,25 @@ export async function getXpListings(options: GetXpListingsOptions): Promise<XpMa
   const abi = CONTRACTS.XpMarket.abi as Abi;
   const client = createBrowserClient(chain, rpcUrl);
 
-  const raw = (await client.readContract({
-    address,
-    abi,
-    functionName: 'getListings',
-    args: [BigInt(startIndex), BigInt(length)],
-  })) as unknown as GetListingsRaw;
+  const all: XpMarketItem[] = [];
+  let startIndex = 0;
 
-  return normalizeListings(raw).map(parseItem);
+  while (true) {
+    const raw = (await client.readContract({
+      address,
+      abi,
+      functionName: 'getListings',
+      args: [BigInt(startIndex), BigInt(pageSize)],
+    })) as unknown as GetListingsRaw;
+
+    const page = normalizeListings(raw).map(parseItem);
+    if (page.length === 0) break;
+    all.push(...page);
+    if (page.length < pageSize) break;
+    startIndex += pageSize;
+  }
+
+  return all;
 }
 
 export const XpMarket = { getXpListings };

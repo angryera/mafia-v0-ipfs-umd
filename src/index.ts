@@ -41,6 +41,8 @@ export type {
   MarketplaceBid as InventoryMarketplaceBid,
   InventoryItem as InventoryMarketplaceItem,
 } from './features/inventory-marketplace/index.js';
+export { getRaces } from './features/race-lobby/index.js';
+export type { RaceInfo } from './features/race-lobby/index.js';
 
 // Re-export config for advanced usage
 export { CONTRACT_ADDRESSES, CONTRACT_ABIS } from './config/index.js';

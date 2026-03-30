@@ -276,10 +276,8 @@
             </div>
             <div class="flex flex-wrap items-center gap-2">
               <span class="font-mono text-green-400 text-xs">→</span>
-              <span class="font-mono text-gray-500 text-xs">getXpListings(start:</span>
-              <input type="number" id="xp-start-index" value="0" class="w-16 text-center cli-input" placeholder="0">
-              <span class="font-mono text-gray-500 text-xs">len:</span>
-              <input type="number" id="xp-length" value="20" class="w-16 text-center cli-input" placeholder="20">
+              <span class="font-mono text-gray-500 text-xs">getXpListings(pageSize:</span>
+              <input type="number" id="xp-page-size" value="200" class="w-20 text-center cli-input" placeholder="200">
               <span class="font-mono text-gray-500 text-xs">)</span>
             </div>
             <button id="load-xp-listings"
@@ -304,6 +302,26 @@
               <span class="font-mono text-gray-500 text-xs">)</span>
             </div>
             <button id="load-marketplace-active-listings"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+          </div>
+        </div>
+
+        <!-- MafiaRaceLobby Card -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">MafiaRaceLobby</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getRaces(pageSize:</span>
+              <input type="number" id="races-page-size" value="200" class="w-20 text-center cli-input" placeholder="200">
+              <span class="font-mono text-gray-500 text-xs">)</span>
+            </div>
+            <button id="load-races"
               class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
               Execute
             </button>
@@ -455,8 +473,6 @@
             );
           },
         });
-
-        console.log(items);
 
         output.innerHTML = formatTerminalOutput(
           `Done: ${items.length} items matched\n\nFirst 10:\n${JSON.stringify(items.slice(0, 10), null, 2)}`,
@@ -677,14 +693,12 @@
 
     document.getElementById("load-xp-listings").addEventListener("click", async () => {
       setButtonLoading("load-xp-listings", true);
-      const startIndex = parseInt(document.getElementById("xp-start-index").value, 10) || 0;
-      const length = parseInt(document.getElementById("xp-length").value, 10) || 20;
-      output.innerHTML = formatTerminalOutput(`Loading XP listings (startIndex: ${startIndex}, length: ${length})...`, 'info');
+      const pageSize = parseInt(document.getElementById("xp-page-size").value, 10) || 200;
+      output.innerHTML = formatTerminalOutput(`Loading ALL XP listings (pageSize: ${pageSize})...`, 'info');
       try {
         const listings = await window.XpMarket.getXpListings({
           chain: "bnb",
-          startIndex,
-          length,
+          pageSize,
         });
 
         const statusCounts = { active: 0, sold: 0, cancelled: 0 };
@@ -733,24 +747,24 @@
       const pageSize = parseInt(document.getElementById("marketplace-page-size").value, 10) || 200;
       output.innerHTML = formatTerminalOutput(`Loading marketplace active listings (pageSize: ${pageSize})...`, 'info');
       try {
-        const listings = await window.MafiaInventoryMarketplace.getActiveListings({
+        let listings = await window.MafiaInventoryMarketplace.getActiveListings({
           chain: "bnb",
           pageSize,
         });
 
-        const list = Array.isArray(listings) ? listings : [];
+        listings = listings.filter((l) => new Date().getTime() / 1000 < l.expiresAt);
 
         const statusCounts = { open: 0, sold: 0, canceled: 0 };
-        list.forEach((l) => {
+        listings.forEach((l) => {
           if (l.status === 0) statusCounts.open++;
           else if (l.status === 1) statusCounts.sold++;
           else if (l.status === 2) statusCounts.canceled++;
         });
 
         const summary = {
-          listings: list.length,
+          listings: listings.length,
           statusCounts,
-          sample: list.slice(0, 5).map((l) => ({
+          sample: listings.slice(0, 5).map((l) => ({
             itemId: l.itemId,
             item: { categoryId: l.item.categoryId, typeId: l.item.typeId, owner: (l.item.owner || '').slice(0, 10) + '...' },
             listingType: l.listingType,
@@ -773,6 +787,58 @@
         output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
       } finally {
         setButtonLoading("load-marketplace-active-listings", false);
+      }
+    });
+
+    document.getElementById("load-races").addEventListener("click", async () => {
+      setButtonLoading("load-races", true);
+      const pageSize = parseInt(document.getElementById("races-page-size").value, 10) || 200;
+      output.innerHTML = formatTerminalOutput(`Loading ALL races (pageSize: ${pageSize})...`, 'info');
+      try {
+        const races = await window.MafiaRaceLobby.getRaces({
+          chain: "bnb",
+          pageSize,
+        });
+
+        const list = Array.isArray(races) ? races : [];
+        const statusCounts = { pending: 0, started: 0, finished: 0, cancelled: 0 };
+        list.forEach((r) => {
+          if (r.status === 0) statusCounts.pending++;
+          else if (r.status === 1) statusCounts.started++;
+          else if (r.status === 2) statusCounts.finished++;
+          else if (r.status === 3) statusCounts.cancelled++;
+        });
+
+        const summary = {
+          races: list.length,
+          statusCounts,
+          sample: list.slice(0, 5).map((r) => ({
+            id: r.id,
+            cityId: r.cityId,
+            prizeType: r.prizeType,
+            result: r.result,
+            status: r.status,
+            creator: (r.creator || '').slice(0, 10) + '...',
+            opponent: (r.opponent || '').slice(0, 10) + '...',
+            winner: (r.winner || '').slice(0, 10) + '...',
+            creatorCarId: r.creatorCarId,
+            opponentCarId: r.opponentCarId,
+            creatorCarDamagePercent: r.creatorCarDamagePercent,
+            opponentCarDamagePercent: r.opponentCarDamagePercent,
+            cashAmount: r.cashAmount,
+            startTime: r.startTime,
+            endTime: r.endTime,
+          })),
+        };
+
+        output.innerHTML = formatTerminalOutput(
+          `Done: Races loaded\n\nSummary:\n${JSON.stringify(summary, null, 2)}`,
+          'success'
+        );
+      } catch (err) {
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-races", false);
       }
     });
 

@@ -14,6 +14,7 @@
     "get-all-items-by-owner": "tsx src/cli/get-all-items-by-owner.ts",
     "get-users-info": "tsx src/cli/get-users-info.ts",
     "get-families": "tsx src/cli/get-families.ts",
+    "get-races": "tsx src/cli/get-races.ts",
     "get-slots": "tsx src/cli/get-slots.ts",
     "get-land-slots-by-owner": "tsx src/cli/get-land-slots-by-owner.ts",
     "get-otc-offers": "tsx src/cli/get-otc-offers.ts",
