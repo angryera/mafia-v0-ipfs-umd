@@ -1,0 +1,21 @@
+[
+  {
+    "inputs": [{ "internalType": "address", "name": "user", "type": "address" }],
+    "name": "getSubscriptionInfo",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "planType", "type": "uint256" },
+          { "internalType": "uint256", "name": "startedAt", "type": "uint256" }
+        ],
+        "internalType": "struct MafiaPlayerSubscription.Subscription",
+        "name": "",
+        "type": "tuple"
+      },
+      { "internalType": "bool", "name": "", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
+

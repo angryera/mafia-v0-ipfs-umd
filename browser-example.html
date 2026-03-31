@@ -267,6 +267,34 @@
           </div>
         </div>
 
+        <!-- MafiaWorth Card -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">MafiaWorth</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">computeWorth(chain:</span>
+              <select id="worth-chain" class="w-24 cli-input">
+                <option value="bnb">bnb</option>
+                <option value="pulse">pulse</option>
+              </select>
+              <span class="font-mono text-gray-500 text-xs">)</span>
+            </div>
+            <div class="flex flex-col gap-2">
+              <input type="text" id="worth-player" value="" class="w-full cli-input" placeholder="player 0x...">
+              <input type="text" id="worth-signmsg" value="" class="w-full cli-input" placeholder="signMsg">
+              <input type="text" id="worth-signature" value="" class="w-full cli-input" placeholder="signature 0x...">
+            </div>
+            <button id="load-worth"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+          </div>
+        </div>
+
         <!-- XpMarket Card -->
         <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
           <div class="flex flex-col gap-1.5">
@@ -839,6 +867,47 @@
         output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
       } finally {
         setButtonLoading("load-races", false);
+      }
+    });
+
+    document.getElementById("load-worth").addEventListener("click", async () => {
+      setButtonLoading("load-worth", true);
+      const chain = (document.getElementById("worth-chain").value || "bnb").trim();
+      const player = (document.getElementById("worth-player").value || "").trim();
+      const signMsg = (document.getElementById("worth-signmsg").value || "").trim();
+      const signature = (document.getElementById("worth-signature").value || "").trim();
+
+      if (!player || !player.startsWith("0x")) {
+        output.innerHTML = formatTerminalOutput("Error: Please enter a valid player address (0x...)", 'error');
+        setButtonLoading("load-worth", false);
+        return;
+      }
+      if (!signMsg) {
+        output.innerHTML = formatTerminalOutput("Error: Please enter signMsg", 'error');
+        setButtonLoading("load-worth", false);
+        return;
+      }
+      if (!signature || !signature.startsWith("0x")) {
+        output.innerHTML = formatTerminalOutput("Error: Please enter a valid signature (0x...)", 'error');
+        setButtonLoading("load-worth", false);
+        return;
+      }
+
+      output.innerHTML = formatTerminalOutput(`Computing worth (${chain}, ${player.slice(0, 10)}...)...`, 'info');
+      try {
+        const result = await window.MafiaWorth.computeWorth({ chain, player, signMsg, signature });
+        const breakdown = Array.isArray(result?.breakdown) ? result.breakdown : [];
+        const preview = {
+          totalWorth: result?.totalWorth,
+          worthBoostPercent: result?.worthBoostPercent,
+          subscription: result?.subscription,
+          breakdown,
+        };
+        output.innerHTML = formatTerminalOutput(`Done: Worth computed\n\n${JSON.stringify(preview, null, 2)}`, 'success');
+      } catch (err) {
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-worth", false);
       }
     });
 

@@ -21,6 +21,8 @@ import mafiaBulletAbi from '../abis/MafiaBullet.json' with { type: 'json' };
 import mafiaGameBankAbi from '../abis/MafiaGameBank.json' with { type: 'json' };
 import mafiaHelperCreditAbi from '../abis/MafiaHelperCredit.json' with { type: 'json' };
 import erc20Abi from '../abis/ERC20.json' with { type: 'json' };
+import mafiaPlayerSubscriptionAbi from '../abis/MafiaPlayerSubscription.json' with { type: 'json' };
+import mafiaPerkManagerAbi from '../abis/MafiaPerkManager.json' with { type: 'json' };
 
 export type ChainName = 'bnb' | 'pulse';
 
@@ -161,6 +163,20 @@ export const CONTRACTS = {
       pulse: '0xa27aDe5806Ded801b93499C6fA23cc8dC9AC55EA' as `0x${string}`,
     },
     abi: erc20Abi as Abi,
+  },
+  MafiaPlayerSubscription: {
+    addresses: {
+      bnb: '0x3CEef7Fe3CcF730b87D0bFC651c680a7a76dCa61' as `0x${string}`,
+      pulse: '0xC6409a0113cCF6c4194FBfD8C7409589465e15EC' as `0x${string}`,
+    },
+    abi: mafiaPlayerSubscriptionAbi as Abi,
+  },
+  MafiaPerkManager: {
+    addresses: {
+      bnb: '0x465001359458Df7812C0c0b7d186aA2843DBf9F7' as `0x${string}`,
+      pulse: '0xAe6311dF40FC6fE8fe9F06c7381E02eEa8B88c0F' as `0x${string}`,
+    },
+    abi: mafiaPerkManagerAbi as Abi,
   },
 } as const satisfies Record<string, ContractConfig>;
 
