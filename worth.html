@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BnbMafia - Worth</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            dark: {
+              50: '#f9fafb',
+              100: '#f3f4f6',
+              200: '#e5e7eb',
+              300: '#d1d5db',
+              400: '#9ca3af',
+              500: '#6b7280',
+              600: '#4b5563',
+              700: '#374151',
+              800: '#1f2937',
+              900: '#111827',
+              950: '#030712',
+            },
+            terminal: {
+              green: '#00ff00',
+              cyan: '#00ffff',
+              yellow: '#ffff00',
+              red: '#ff0000',
+              bg: '#0d1117',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      background-color: #0d1117;
+    }
+
+    .cli-input {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      color: #00ff00;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+    }
+
+    .cli-input:focus {
+      outline: none;
+      border-color: #00ffff;
+      color: #00ffff;
+    }
+
+    .cli-button {
+      color: #00ff00;
+      transition: all 0.2s;
+      background-color: transparent;
+    }
+
+    .cli-button:hover:not(:disabled) {
+      color: #00ffff;
+      border-color: #00ffff;
+    }
+
+    .cli-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .card {
+      background-color: #0d1117;
+      border: 1px solid #374151;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-gray-100">
+  <div class="mx-auto px-4 py-8 max-w-5xl container">
+    <header class="mb-6">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="font-mono text-cyan-400 text-sm">$</span>
+        <h1 class="font-mono font-bold text-white text-2xl">Worth</h1>
+      </div>
+      <p class="pl-4 font-mono text-gray-500 text-xs">
+        # Run <code class="text-cyan-400">npm run build:browser</code> then serve this folder, open <code
+          class="text-cyan-400">worth.html</code>
+      </p>
+    </header>
+
+    <section class="mb-6 p-4 rounded card">
+      <div class="flex flex-col md:flex-row md:items-end gap-3">
+        <div class="flex flex-col gap-1">
+          <label class="text-gray-400 text-xs">Chain</label>
+          <select id="chain" class="cli-input w-40">
+            <option value="bnb">bnb</option>
+            <option value="pulse">pulse</option>
+          </select>
+        </div>
+        <div class="flex-1 flex flex-col gap-1">
+          <label class="text-gray-400 text-xs">Player address</label>
+          <input id="player" class="cli-input w-full" placeholder="0x..."
+            value="0xad3f2043d1c1f42427f4ca893b637f629647ae16" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-gray-400 text-xs">signMsg</label>
+          <input id="signMsg" class="cli-input w-72" placeholder="message to sign"
+            value='"Sign in bnb.playmafia.io with 0xad3f2043d1c1f42427f4ca893b637f629647ae16 - expire at 1775136249"' />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-gray-400 text-xs">signature</label>
+          <input id="signature" class="cli-input w-72" placeholder="0x..."
+            value="0xc030c4f69c35797f931925f2e9c40586e60ca21c69952dd2b72115b64f4d45cb3aa7d7dcff0987f9694ec513ab3e378f5f52a63cd5dcafea8f146707f6ba45331b" />
+        </div>
+        <button id="load" class="px-3 py-2 border border-dark-700 rounded font-mono text-xs cli-button">
+          Load Worth
+        </button>
+      </div>
+      <div id="status" class="mt-3 text-xs text-cyan-400"></div>
+    </section>
+
+    <section class="mb-6 flex items-center justify-center">
+      <div class="relative w-full max-w-md text-center">
+        <div class="mx-auto mb-2 w-10 h-10 rounded-full border border-dark-700 flex items-center justify-center">
+          <span class="text-yellow-300 text-lg">★</span>
+        </div>
+        <div class="mx-auto p-4 rounded card">
+          <div class="text-3xl font-bold text-white" id="totalWorth">—</div>
+          <div class="text-gray-400 text-xs">Your total worth</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-1 gap-4">
+      <div class="p-4 rounded card">
+        <div class="flex items-center justify-between pb-2 border-b border-dark-700">
+          <div class="text-white font-bold">Worth breakdown</div>
+          <div class="text-gray-400 text-xs" id="worthBoost">Worth Boost: —</div>
+        </div>
+        <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div>
+            <div class="text-gray-400 mb-2">Profile</div>
+            <div class="space-y-1" id="profileRows"></div>
+          </div>
+          <div>
+            <div class="text-gray-400 mb-2">Assets</div>
+            <div class="space-y-1" id="assetRows"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 rounded card">
+        <div class="text-gray-400 text-xs mb-2">Debug (raw computed object)</div>
+        <pre id="debug" class="text-xs overflow-auto max-h-80"></pre>
+      </div>
+    </section>
+  </div>
+
+  <script src="./dist/mafia-utils.js" defer></script>
+  <script>
+    const els = {
+      chain: document.getElementById('chain'),
+      player: document.getElementById('player'),
+      signMsg: document.getElementById('signMsg'),
+      signature: document.getElementById('signature'),
+      load: document.getElementById('load'),
+      status: document.getElementById('status'),
+      totalWorth: document.getElementById('totalWorth'),
+      worthBoost: document.getElementById('worthBoost'),
+      profileRows: document.getElementById('profileRows'),
+      assetRows: document.getElementById('assetRows'),
+      debug: document.getElementById('debug'),
+    };
+
+    function row(label, value, worth) {
+      const div = document.createElement('div');
+      div.className = 'grid grid-cols-12 gap-2 items-center';
+      div.innerHTML = `
+        <span class="col-span-3 text-gray-300">${label}</span>
+        <span class="col-span-6 text-white font-semibold text-right">${value}</span>
+        <span class="col-span-3 text-white font-semibold text-right">${worth}</span>
+      `;
+      return div;
+    }
+
+    function setLoading(isLoading) {
+      els.load.disabled = isLoading;
+      els.status.textContent = isLoading ? 'Loading…' : '';
+    }
+
+    /**
+     * Placeholder: once you provide how to compute each field, wire contract calls here.
+     * @returns {Promise<any>}
+     */
+    // Static config (edit later)
+    const RankXPName = [
+      "Nobody", "Apprentice", "Pickpocket", "Cloak", "Thief", "Locksmith", "Runner", "Associate", "Dealer", "Fixer",
+      "Collector", "Enforcer", "Prospect", "Lieutenant", "Soldier", "Mobster", "Swindler", "Whisperer", "Architect",
+      "Hitman", "Assassin", "Commander", "Executioner", "Widowmaker", "Bone collector", "Tactician", "Chief", "Warlord",
+      "Capo bastone", "Godfather",
+    ];
+    // Worth values per rank (index 0 = rankLevel 1 on-chain)
+    const RANK_WORTH_VALUES = [
+      5, 10, 15, 25, 75, 150, 250, 450, 750, 900, 1100, 1450, 1600, 1750, 1900,
+      2050, 2200, 2350, 2500, 2650, 2800, 2950, 3100, 3250, 3400, 3550, 3700,
+      3850, 4000, 4150,
+    ];
+    // Role worth values (from your table)
+    // Note: "Regime member" vs "Family member" requires an extra signal we don't have yet,
+    // so Normal members default to "Family member" for now.
+    const ROLE_WORTH_VALUES = {
+      nonMember: 0,
+      familyMember: 25,
+      regimeMember: 50, // placeholder wiring (needs extra data to detect)
+      Capo: 250,
+      Capodecina: 500,
+      Consigliere: 600,
+      Don: 1000,
+    };
+    const PlayerLevelName = ['Normal', 'Capo', 'Capodecina', 'Consigliere', 'Don'];
+
+    function fmt(v) {
+      return v === null || v === undefined ? '—' : String(v);
+    }
+    function fmtWorth(v) {
+      return v === null || v === undefined ? '—' : Number(v).toLocaleString();
+    }
+
+    function cashWorthFromBalance(cash) {
+      const c = Number(cash ?? 0);
+      if (!Number.isFinite(c) || c <= 0) return 0;
+      if (c < 100_000) return 5;
+      if (c < 500_000) return 15;
+      if (c < 5_000_000) return 35;
+      if (c < 10_000_000) return 50;
+      if (c < 25_000_000) return 75;
+      if (c < 100_000_000) return 100;
+      return 125;
+    }
+
+    async function computeWorth({ chain, player, signMsg, signature }) {
+      const [rankLevelRaw, playerInfo, raceXp, killSkillXp, bustOutXp, citiesPower, bullets, cash, spentCredits, mafiaToken, allCitySlots] = await Promise.all([
+        window.MafiaRankXp.getRankLevel({ chain, playerAddress: player }),
+        window.MafiaFamily.getPlayersInfo({ chain, users: [player] }).then((list) => (Array.isArray(list) ? list[0] : null)),
+        window.MafiaRaceXp.getRaceXp({ chain, playerAddress: player, message: signMsg, signature }),
+        window.MafiaKillSkill.getKillSkillXp({ chain, playerAddress: player, message: signMsg, signature }),
+        window.BustOutSkill.getBustOutXp({ chain, playerAddress: player, message: signMsg, signature }),
+        window.MafiaEquipment.getCitiesTotalPower({
+          chain,
+          playerAddress: player,
+          message: signMsg,
+          signature,
+        }),
+        window.MafiaBullet.balanceOfBullet({ chain, playerAddress: player, message: signMsg, signature }),
+        window.MafiaGameBank.balanceOfWithSignMsg({ chain, playerAddress: player, message: signMsg, signature }),
+        window.MafiaHelperCredit.userSpentCredits({ chain, playerAddress: player }),
+        window.MafiaToken.balanceOf({ chain, playerAddress: player }),
+        window.MafiaMap.getSlotsByCities({
+          chain,
+          // Cities 0..10
+          cityIds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        }),
+      ]);
+
+      const familyId = Number(playerInfo?.familyId ?? 0);
+      const playerLevel = Number(playerInfo?.level ?? 0);
+      const levelName = PlayerLevelName[playerLevel] ?? 'Normal';
+
+      let roleLabel = 'Non member';
+      let roleWorth = ROLE_WORTH_VALUES.nonMember;
+
+      if (familyId !== 0) {
+        if (levelName === 'Don') {
+          roleLabel = 'Don';
+          roleWorth = ROLE_WORTH_VALUES.Don;
+        } else if (levelName === 'Consigliere') {
+          roleLabel = 'Consigliere';
+          roleWorth = ROLE_WORTH_VALUES.Consigliere;
+        } else if (levelName === 'Capodecina') {
+          roleLabel = 'Capodecina';
+          roleWorth = ROLE_WORTH_VALUES.Capodecina;
+        } else if (levelName === 'Capo') {
+          roleLabel = 'Capo';
+          roleWorth = ROLE_WORTH_VALUES.Capo;
+        } else {
+          // Normal family member
+          roleLabel = 'Family member';
+          roleWorth = ROLE_WORTH_VALUES.familyMember;
+        }
+      }
+
+      const rankLevel = Number(rankLevelRaw ?? 0);
+      const rankIndex = Math.max(0, rankLevel - 1); // on-chain is 1-based
+      const rankName = RankXPName[rankIndex] ?? `Rank ${rankLevel}`;
+
+      const rankWorth = RANK_WORTH_VALUES[rankIndex] ?? 0;
+      const raceWorth = (Number(raceXp ?? 0) / 5000) * 13;
+      const killSkillWorth = (Number(killSkillXp ?? 0) / 10000) * 22;
+      const bustOutWorth = (Number(bustOutXp ?? 0) / 5000) * 4;
+      const defensePowers = citiesPower?.defense ?? [];
+      const offensePowers = citiesPower?.offense ?? [];
+      const defensePower = defensePowers.reduce((sum, x) => sum + (Number(x) || 0), 0);
+      const offensePower = offensePowers.reduce((sum, x) => sum + (Number(x) || 0), 0);
+      const defenseWorth = defensePower * 0.3;
+      const offenseWorth = offensePower * 0.4;
+      // Bullets worth: per 1000 bullets => 2
+      const bulletsWorth = (Number(bullets ?? 0) / 1000) * 2;
+      const cashWorth = cashWorthFromBalance(cash);
+      // Spent credits worth: per 100 => 1
+      const spentCreditsWorth = (Number(spentCredits ?? 0) / 100) * 1;
+      // $MAFIA worth: per 3000 => 1
+      const mafiaWorth = (Number(mafiaToken ?? 0) / 3000) * 1;
+      const ownerLc = String(player).toLowerCase();
+      const slotsByOwner = (Array.isArray(allCitySlots) ? allCitySlots : []).filter(
+        (s) => String(s?.owner ?? '').toLowerCase() === ownerLc
+      );
+      // Land slots: owned slots with inventoryItemId != 0 (same behavior as previous requireInventoryItem=true)
+      const landSlots = slotsByOwner.filter((s) => Number(s?.inventoryItemId ?? 0) !== 0);
+
+      // City developer (computed from allCitySlots)
+      // Aggregate operating building stats by city + owner, then find top owners per city.
+      const getBuildingStats = (slotSubType) => {
+        const buildingStatsMap = {
+          1: { offense: 3, defense: 5 }, // Shed
+          2: { offense: 15, defense: 15 }, // House
+          3: { offense: 30, defense: 30 }, // Villa
+          4: { offense: 50, defense: 75 }, // Office
+          5: { offense: 60, defense: 90 }, // Apartment
+          6: { offense: 75, defense: 110 }, // Mansion
+          7: { offense: 75, defense: 150 }, // Hotel
+        };
+        return buildingStatsMap[Number(slotSubType ?? 0)] || { offense: 0, defense: 0 };
+      };
+
+      // Rarity amplifier (based on slot.rarity)
+      // Mapping used elsewhere in this project: 0 Strategic, 1 Common, 2 Upper, 3 Elite
+      const getBuildingRarityAmplifier = (defense, offense, rarity) => {
+        const r = Number(rarity ?? 1);
+        switch (r) {
+          case 0: // Strategic
+            return { defense: defense * 1.3, offense: offense * 1.3 };
+          case 3: // Elite
+            return { defense: defense * 1.4, offense: offense * 1.4 };
+          case 2: // Upper
+            return { defense: defense * 1.15, offense: offense * 1.15 };
+          case 1: // Common
+          default:
+            return { defense, offense };
+        }
+      };
+
+      const operatingSlots = (Array.isArray(allCitySlots) ? allCitySlots : []).filter((s) => Boolean(s?.isOperating));
+
+      /** @type {Map<number, Map<string, { defense: number }>>} */
+      const cityOwnerTotals = new Map();
+      for (const slot of operatingSlots) {
+        const cityId = Number(slot?.cityId ?? 0);
+        const owner = String(slot?.owner ?? '').toLowerCase();
+        if (!owner) continue;
+
+        const stats = getBuildingStats(slot?.slotSubType);
+        const amplified = getBuildingRarityAmplifier(
+          Number(stats.defense ?? 0),
+          Number(stats.offense ?? 0),
+          slot?.rarity
+        );
+        if (!cityOwnerTotals.has(cityId)) cityOwnerTotals.set(cityId, new Map());
+        const ownerMap = cityOwnerTotals.get(cityId);
+        const prev = ownerMap.get(owner) ?? { defense: 0 };
+        ownerMap.set(owner, {
+          defense: prev.defense + Number(amplified.defense ?? 0),
+        });
+      }
+
+      const cityWinners = [];
+      let playerTopDefenseCities = 0;
+      for (const [cityId, ownerMap] of cityOwnerTotals.entries()) {
+        let topDefenseOwner = null;
+        let topDefense = 0;
+        for (const [owner, totals] of ownerMap.entries()) {
+          const def = Number(totals.defense ?? 0);
+          if (def > topDefense) {
+            topDefense = def;
+            topDefenseOwner = owner;
+          }
+        }
+        if (topDefenseOwner === ownerLc) playerTopDefenseCities++;
+        cityWinners.push({
+          cityId,
+          topDefenseOwner,
+          topDefense,
+        });
+      }
+
+      const cityDeveloperValue = `Top defense: ${playerTopDefenseCities}`;
+      const isCityDeveloper = playerTopDefenseCities > 0;
+      const cityDeveloperWorth = isCityDeveloper ? 200 : 0;
+
+      // Active land: land slots owned by player where isOperating is true
+      const activeLandSlots = landSlots.filter((s) => Boolean(s?.isOperating));
+      const activeLandCount = activeLandSlots.length;
+      const activeLandWorth = activeLandSlots.reduce((sum, s) => {
+        const subType = Number(s?.slotSubType ?? 0);
+        return sum + (subType >= 0 && subType <= 3 ? 1 : 10);
+      }, 0);
+
+      // Real estate: highest slotSubType among ALL owned land slots (not just operating)
+      const REAL_ESTATE_TILES = [
+        { name: 'Empty tile', worth: 10 },
+        { name: 'Shed', worth: 30 },
+        { name: 'House', worth: 50 },
+        { name: 'Villa', worth: 70 },
+        { name: 'Office', worth: 90 },
+        { name: 'Apartment', worth: 110 },
+        { name: 'Mansion', worth: 130 },
+        { name: 'Hotel', worth: 150 },
+      ];
+      const highestSlotSubType = (Array.isArray(landSlots) ? landSlots : []).reduce((max, s) => {
+        const st = Number(s?.slotSubType ?? 0);
+        return st > max ? st : max;
+      }, 0);
+      const realEstateIndex = Math.max(0, Math.min(REAL_ESTATE_TILES.length - 1, highestSlotSubType));
+      const realEstateTile = REAL_ESTATE_TILES[realEstateIndex] ?? REAL_ESTATE_TILES[0];
+      const realEstateWorth = Number(realEstateTile?.worth ?? 0);
+      const realEstateValue = String(realEstateTile?.name ?? 'Empty tile');
+
+      const breakdown = [
+        { group: 'Profile', label: 'Rank', value: `${rankName} (Level ${rankLevel})`, worth: rankWorth },
+        { group: 'Profile', label: 'Role', value: roleLabel, worth: roleWorth },
+        { group: 'Profile', label: 'City developer', value: cityDeveloperValue, worth: cityDeveloperWorth },
+        { group: 'Profile', label: 'Race', value: raceXp, worth: raceWorth },
+        { group: 'Profile', label: 'Kill skill', value: killSkillXp, worth: killSkillWorth },
+        { group: 'Profile', label: 'Bust out', value: bustOutXp, worth: bustOutWorth },
+        { group: 'Profile', label: 'Offense Power', value: offensePower, worth: offenseWorth },
+        { group: 'Profile', label: 'Defense Power', value: defensePower, worth: defenseWorth },
+
+        { group: 'Assets', label: 'Bullets', value: bullets, worth: bulletsWorth },
+        { group: 'Assets', label: 'Cash', value: cash, worth: cashWorth },
+        { group: 'Assets', label: 'Business', value: null, worth: 0 },
+        { group: 'Assets', label: 'Real estate', value: realEstateValue, worth: realEstateWorth },
+        { group: 'Assets', label: 'Active land', value: activeLandCount, worth: activeLandWorth },
+        { group: 'Assets', label: '$Mafia', value: mafiaToken, worth: mafiaWorth },
+        { group: 'Assets', label: 'Spent Credits', value: spentCredits, worth: spentCreditsWorth },
+      ];
+
+      const totalWorth = breakdown.reduce((sum, r) => sum + (Number(r.worth) || 0), 0);
+
+      return { totalWorth, worthBoostPercent: null, breakdown, cityWinners };
+    }
+
+    async function onLoad() {
+      const chain = els.chain.value;
+      const player = (els.player.value || '').trim();
+      const signMsg = (els.signMsg.value || '').trim();
+      const signature = (els.signature.value || '').trim();
+
+      if (!player || !player.startsWith('0x')) {
+        els.status.textContent = 'Error: enter a valid player address (0x…)';
+        els.status.className = 'mt-3 text-xs text-red-400';
+        return;
+      }
+      if (!signMsg) {
+        els.status.textContent = 'Error: enter signMsg';
+        els.status.className = 'mt-3 text-xs text-red-400';
+        return;
+      }
+      if (!signature || !signature.startsWith('0x')) {
+        els.status.textContent = 'Error: enter a valid signature (0x…)';
+        els.status.className = 'mt-3 text-xs text-red-400';
+        return;
+      }
+
+      els.status.className = 'mt-3 text-xs text-cyan-400';
+      setLoading(true);
+      try {
+        const worth = await computeWorth({ chain, player, signMsg, signature });
+
+        // total
+        els.totalWorth.textContent = worth.totalWorth ?? '—';
+        els.worthBoost.textContent = `Worth Boost: ${worth.worthBoostPercent ?? '—'}`;
+
+        // rows
+        els.profileRows.innerHTML = '';
+        // headings
+        els.profileRows.innerHTML = '';
+        els.profileRows.appendChild(row('Label', 'Value', 'Worth'));
+        worth.breakdown.filter((r) => r.group === 'Profile').forEach((r) => {
+          els.profileRows.appendChild(row(r.label, fmt(r.value), fmtWorth(r.worth)));
+        });
+
+        els.assetRows.innerHTML = '';
+        els.assetRows.appendChild(row('Label', 'Value', 'Worth'));
+        worth.breakdown.filter((r) => r.group === 'Assets').forEach((r) => {
+          els.assetRows.appendChild(row(r.label, fmt(r.value), fmtWorth(r.worth)));
+        });
+
+        els.debug.textContent = JSON.stringify(worth, null, 2);
+        els.status.textContent = 'Done.';
+      } catch (err) {
+        els.status.className = 'mt-3 text-xs text-red-400';
+        els.status.textContent = `Error: ${err?.message ?? String(err)}`;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    els.load.addEventListener('click', onLoad);
+  </script>
+</body>
+
+</html>

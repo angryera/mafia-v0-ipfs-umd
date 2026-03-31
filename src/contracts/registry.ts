@@ -12,6 +12,15 @@ import mafiaExchangeAbi from '../abis/MafiaExchange.json' with { type: 'json' };
 import xpMarketAbi from '../abis/XPMarket.json' with { type: 'json' };
 import mafiaInventoryMarketplaceAbi from '../abis/MafiaInventoryMarketplace.json' with { type: 'json' };
 import mafiaRaceLobbyAbi from '../abis/MafiaRaceLobby.json' with { type: 'json' };
+import mafiaRankXpAbi from '../abis/MafiaRankXp.json' with { type: 'json' };
+import mafiaRaceXpAbi from '../abis/MafiaRaceXP.json' with { type: 'json' };
+import mafiaKillSkillAbi from '../abis/MafiaKillSkill.json' with { type: 'json' };
+import bustOutSkillAbi from '../abis/BustOutSkill.json' with { type: 'json' };
+import mafiaEquipmentAbi from '../abis/MafiaEquipment.json' with { type: 'json' };
+import mafiaBulletAbi from '../abis/MafiaBullet.json' with { type: 'json' };
+import mafiaGameBankAbi from '../abis/MafiaGameBank.json' with { type: 'json' };
+import mafiaHelperCreditAbi from '../abis/MafiaHelperCredit.json' with { type: 'json' };
+import erc20Abi from '../abis/ERC20.json' with { type: 'json' };
 
 export type ChainName = 'bnb' | 'pulse';
 
@@ -89,6 +98,69 @@ export const CONTRACTS = {
       pulse: '0x10D0D93BD141a76F8cBcA1cd94CAf8081C5d0427' as `0x${string}`,
     },
     abi: mafiaRaceLobbyAbi as Abi,
+  },
+  MafiaRankXp: {
+    addresses: {
+      bnb: '0x48F2C9C0ea337854492aF5bEbEa74e8917712B71' as `0x${string}`,
+      pulse: '0x74eADd7ebeeED638FD7c413134FA3D3433699D92' as `0x${string}`,
+    },
+    abi: mafiaRankXpAbi as Abi,
+  },
+  MafiaRaceXp: {
+    addresses: {
+      bnb: '0x05BE7743913dECe53D93E22120279f0630014743' as `0x${string}`,
+      pulse: '0x6B454a53581E3b1e93553485210A2172e4897FD0' as `0x${string}`,
+    },
+    abi: mafiaRaceXpAbi as Abi,
+  },
+  MafiaKillSkill: {
+    addresses: {
+      bnb: '0xa5dc2Cb4dC13f12d8464eaA862fAC00F19ADc84d' as `0x${string}`,
+      pulse: '0xdC45E5469A8B6D020473F69fEC91C0f0e83a3308' as `0x${string}`,
+    },
+    abi: mafiaKillSkillAbi as Abi,
+  },
+  BustOutSkill: {
+    addresses: {
+      bnb: '0xd401B2af85Df998faaDD0963F0e15e2EB92D5697' as `0x${string}`,
+      pulse: '0xf404b3336f5D78406326e848c8bc14Cbf2566d0A' as `0x${string}`,
+    },
+    abi: bustOutSkillAbi as Abi,
+  },
+  MafiaEquipment: {
+    addresses: {
+      bnb: '0xa2AA522B4CCBc95Dec0aFCa2B0c645f9C126cD24' as `0x${string}`,
+      pulse: '0x37edFc50908e194f05912EA0BC812Cd2f1Eb5bE4' as `0x${string}`,
+    },
+    abi: mafiaEquipmentAbi as Abi,
+  },
+  MafiaBullet: {
+    addresses: {
+      bnb: '0xa42AE5D3E84bff9cD2C734A072232D9629f2ED16' as `0x${string}`,
+      pulse: '0x98f0d50b77BCcd657ecfa2E5C1E4915c6f4565B8' as `0x${string}`,
+    },
+    abi: mafiaBulletAbi as Abi,
+  },
+  MafiaGameBank: {
+    addresses: {
+      bnb: '0x376554F7BbcdeB348fa4b8371135B87eC6b29c38' as `0x${string}`,
+      pulse: '0x839340bDC0b0E4449b7e1dEBD0db7E93861Ed1D9' as `0x${string}`,
+    },
+    abi: mafiaGameBankAbi as Abi,
+  },
+  MafiaHelperCredit: {
+    addresses: {
+      bnb: '0x192F029CC7e0BB80dB201191E0040e8F801df34d' as `0x${string}`,
+      pulse: '0x9D2417e5cB35abaae331b32fb262c75A258a0717' as `0x${string}`,
+    },
+    abi: mafiaHelperCreditAbi as Abi,
+  },
+  MafiaToken: {
+    addresses: {
+      bnb: '0x3cb3F4f43D4Be61AA92BB4EEFfe7142A13bf4111' as `0x${string}`,
+      pulse: '0xa27aDe5806Ded801b93499C6fA23cc8dC9AC55EA' as `0x${string}`,
+    },
+    abi: erc20Abi as Abi,
   },
 } as const satisfies Record<string, ContractConfig>;
 

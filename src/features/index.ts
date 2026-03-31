@@ -32,6 +32,8 @@ export {
 
 export { getLandSlotsByOwner } from './mafia-map/getLandSlotsByOwner.js';
 export type { GetLandSlotsByOwnerOptions, GetLandSlotsByOwnerProgress } from './mafia-map/getLandSlotsByOwner.js';
+export { getSlotsByCities } from './mafia-map/getSlotsByCities.js';
+export type { GetSlotsByCitiesOptions, GetSlotsByCitiesProgress } from './mafia-map/getSlotsByCities.js';
 
 export { getListings as getXpListings } from './xp-market/getListings.js';
 export type { XpMarketItem, XpBid } from './xp-market/getListings.js';

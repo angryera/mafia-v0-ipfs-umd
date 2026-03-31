@@ -356,7 +356,7 @@
   <script src="./dist/mafia-utils.js" defer></script>
   <script>
     const output = document.getElementById("output");
-
+    
     function formatTerminalOutput(text, type = 'info') {
       const prompt = '$ ';
       const colors = {
@@ -368,25 +368,25 @@
         default: '#00ff00',
         json: '#ffffff'
       };
-
+      
       // Split by lines
       const lines = text.split('\n');
       let result = '';
-
+      
       lines.forEach((line, index) => {
         if (index === 0) {
           // First line gets the prompt
           result += `<span style="color: ${colors.prompt}">${prompt}</span>`;
         }
-
+        
         if (line.trim() === '') {
           result += '\n';
           return;
         }
-
+        
         // Check if line is JSON (starts with { or [ or contains JSON structure)
-        if (line.trim().startsWith('{') || line.trim().startsWith('[') ||
-          line.includes('"') && (line.includes(':') || line.includes(','))) {
+        if (line.trim().startsWith('{') || line.trim().startsWith('[') || 
+            line.includes('"') && (line.includes(':') || line.includes(','))) {
           result += `<span style="color: ${colors.json}">${line}</span>`;
         }
         // Check for success indicators
@@ -405,15 +405,15 @@
         else {
           result += `<span style="color: ${colors[type]}">${line}</span>`;
         }
-
+        
         if (index < lines.length - 1) {
           result += '\n';
         }
       });
-
+      
       return result;
     }
-
+    
     output.innerHTML = formatTerminalOutput("Welcome! Click any button above to start exploring the BnbMafia SDK.\n\nTip: Results will appear here in real-time.", 'info');
 
     function setButtonLoading(buttonId, isLoading) {

@@ -9,6 +9,15 @@ import { MafiaExchange } from './mafia-exchange.js';
 import { XpMarket } from './xp-market.js';
 import { MafiaInventoryMarketplace } from './inventory-marketplace.js';
 import { MafiaRaceLobby } from './race-lobby.js';
+import { MafiaRankXp } from './mafia-rank-xp.js';
+import { MafiaRaceXp } from './mafia-race-xp.js';
+import { MafiaKillSkill } from './mafia-kill-skill.js';
+import { BustOutSkill } from './bust-out-skill.js';
+import { MafiaEquipment } from './mafia-equipment.js';
+import { MafiaBullet } from './mafia-bullet.js';
+import { MafiaGameBank } from './mafia-game-bank.js';
+import { MafiaHelperCredit } from './mafia-helper-credit.js';
+import { MafiaToken } from './mafia-token.js';
 
 declare const window: Window & {
   MafiaInventory?: unknown;
@@ -19,6 +28,15 @@ declare const window: Window & {
   XpMarket?: unknown;
   MafiaInventoryMarketplace?: unknown;
   MafiaRaceLobby?: unknown;
+  MafiaRankXp?: unknown;
+  MafiaRaceXp?: unknown;
+  MafiaKillSkill?: unknown;
+  BustOutSkill?: unknown;
+  MafiaEquipment?: unknown;
+  MafiaBullet?: unknown;
+  MafiaGameBank?: unknown;
+  MafiaHelperCredit?: unknown;
+  MafiaToken?: unknown;
 };
 
 if (typeof window !== 'undefined') {
@@ -30,9 +48,18 @@ if (typeof window !== 'undefined') {
   window.XpMarket = XpMarket;
   window.MafiaInventoryMarketplace = MafiaInventoryMarketplace;
   window.MafiaRaceLobby = MafiaRaceLobby;
+  window.MafiaRankXp = MafiaRankXp;
+  window.MafiaRaceXp = MafiaRaceXp;
+  window.MafiaKillSkill = MafiaKillSkill;
+  window.BustOutSkill = BustOutSkill;
+  window.MafiaEquipment = MafiaEquipment;
+  window.MafiaBullet = MafiaBullet;
+  window.MafiaGameBank = MafiaGameBank;
+  window.MafiaHelperCredit = MafiaHelperCredit;
+  window.MafiaToken = MafiaToken;
 }
 
-export { MafiaInventory, MafiaProfile, MafiaFamily, MafiaMap, MafiaExchange, XpMarket, MafiaInventoryMarketplace, MafiaRaceLobby };
+export { MafiaInventory, MafiaProfile, MafiaFamily, MafiaMap, MafiaExchange, XpMarket, MafiaInventoryMarketplace, MafiaRaceLobby, MafiaRankXp, MafiaRaceXp, MafiaKillSkill, BustOutSkill, MafiaEquipment, MafiaBullet, MafiaGameBank, MafiaHelperCredit, MafiaToken };
 export { getItemsByCategory } from './mafia-inventory.js';
 export { getAllItemsByOwner } from './mafia-inventory.js';
 export { getUsersInfo } from './mafia-profile.js';
@@ -42,3 +69,12 @@ export { getOTCOffers } from './mafia-exchange.js';
 export { getXpListings } from './xp-market.js';
 export { getActiveListings as getInventoryMarketplaceActiveListings } from './inventory-marketplace.js';
 export { getRaces } from './race-lobby.js';
+export { getRankXp, getRankLevel } from './mafia-rank-xp.js';
+export { getRaceXp } from './mafia-race-xp.js';
+export { getKillSkillXp } from './mafia-kill-skill.js';
+export { getBustOutXp } from './bust-out-skill.js';
+export { getCitiesTotalPower } from './mafia-equipment.js';
+export { balanceOfBullet } from './mafia-bullet.js';
+export { balanceOfWithSignMsg } from './mafia-game-bank.js';
+export { userSpentCredits } from './mafia-helper-credit.js';
+export { balanceOf as getMafiaTokenBalance } from './mafia-token.js';

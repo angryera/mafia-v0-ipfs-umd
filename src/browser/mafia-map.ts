@@ -53,6 +53,18 @@ export interface GetLandSlotsByOwnerOptions {
   }) => void;
 }
 
+export interface GetSlotsByCitiesOptions {
+  chain: 'bnb' | 'pulse';
+  cityIds: readonly number[];
+  rpcUrl?: string;
+  onProgress?: (info: {
+    cityId: number;
+    cityIndex: number;
+    cityCount: number;
+    fetchedSlots: number;
+  }) => void;
+}
+
 type RawSlot = {
   slotType: number | bigint;
   slotSubType: number | bigint;
@@ -181,4 +193,23 @@ export async function getLandSlotsByOwner(options: GetLandSlotsByOwnerOptions): 
   return result;
 }
 
-export const MafiaMap = { getSlots, getLandSlotsByOwner };
+export async function getSlotsByCities(options: GetSlotsByCitiesOptions): Promise<ParsedSlotInfo[]> {
+  const { chain, cityIds, rpcUrl, onProgress } = options;
+  const result: ParsedSlotInfo[] = [];
+
+  for (let i = 0; i < cityIds.length; i++) {
+    const cityId = cityIds[i] ?? 0;
+    const slots = await getSlots({ chain, cityId, rpcUrl });
+    result.push(...slots);
+    onProgress?.({
+      cityId,
+      cityIndex: i,
+      cityCount: cityIds.length,
+      fetchedSlots: result.length,
+    });
+  }
+
+  return result;
+}
+
+export const MafiaMap = { getSlots, getLandSlotsByOwner, getSlotsByCities };
