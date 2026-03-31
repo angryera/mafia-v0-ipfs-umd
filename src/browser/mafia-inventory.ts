@@ -119,12 +119,6 @@ export async function getItemsByCategory(options: GetItemsByCategoryOptions): Pr
     onProgress,
   } = options;
 
-  if (chain === 'pulse') {
-    throw new Error(
-      'getItemsByCategory is only available on BNB (MafiaInventory). PulseChain does not have this function.'
-    );
-  }
-
   const address = (customAddress ?? CONTRACTS.MafiaInventory.addresses[chain]) as `0x${string}`;
   const abi = getContractAbi(CONTRACTS.MafiaInventory, chain) as Abi;
   const client = createBrowserClient(chain, rpcUrl);
@@ -196,12 +190,6 @@ export async function getAllItemsByOwner(options: GetAllItemsByOwnerOptions): Pr
     rpcUrl,
     onProgress,
   } = options;
-
-  if (chain === 'pulse') {
-    throw new Error(
-      'getAllItemsByOwner is only available on BNB (MafiaInventory.getItemsByCategory). PulseChain does not have this function.'
-    );
-  }
 
   const ownerLc = String(owner).toLowerCase();
   const matched: ParsedItemInfo[] = [];

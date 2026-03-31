@@ -246,7 +246,7 @@
     }
 
     async function computeWorth({ chain, player, signMsg, signature }) {
-      const [rankLevelRaw, playerInfo, raceXp, killSkillXp, bustOutXp, citiesPower, bullets, cash, spentCredits, mafiaToken, allCitySlots] = await Promise.all([
+      const [rankLevelRaw, playerInfo, raceXp, killSkillXp, bustOutXp, citiesPower, bullets, cash, spentCredits, mafiaToken, allCitySlots, businessItemsCat4, businessItemsCat14] = await Promise.all([
         window.MafiaRankXp.getRankLevel({ chain, playerAddress: player }),
         window.MafiaFamily.getPlayersInfo({ chain, users: [player] }).then((list) => (Array.isArray(list) ? list[0] : null)),
         window.MafiaRaceXp.getRaceXp({ chain, playerAddress: player, message: signMsg, signature }),
@@ -267,6 +267,8 @@
           // Cities 0..10
           cityIds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         }),
+        window.MafiaInventory.getItemsByCategory({ chain, categoryId: 4, maxItems: 100_000 }).catch(() => []),
+        window.MafiaInventory.getItemsByCategory({ chain, categoryId: 14, maxItems: 100_000 }).catch(() => []),
       ]);
 
       const familyId = Number(playerInfo?.familyId ?? 0);
@@ -317,6 +319,46 @@
       const spentCreditsWorth = (Number(spentCredits ?? 0) / 100) * 1;
       // $MAFIA worth: per 3000 => 1
       const mafiaWorth = (Number(mafiaToken ?? 0) / 3000) * 1;
+
+      // Business items (categoryId 4 and 14), filtered by owner.
+      const BUSINESS_WORTH = {
+        4: {
+          0: { name: 'Car crusher', worth: 200 },
+          1: { name: 'Gunstore', worth: 200 },
+          2: { name: 'Bank', worth: 300 },
+          3: { name: 'Hospital', worth: 300 },
+          4: { name: 'Detective Agency', worth: 200 },
+          5: { name: 'Booze warehouse', worth: 400 },
+          6: { name: 'Narcotics warehouse', worth: 400 },
+          7: { name: 'Slotmachine', worth: 600 },
+          8: { name: 'Roulette', worth: 600 },
+          9: { name: 'Bullet factory', worth: 800 },
+        },
+        14: {
+          0: { name: 'Jackpot', worth: 600 },
+        },
+      };
+      const bizOwnerLc = String(player).toLowerCase();
+      const cat4Owned = (Array.isArray(businessItemsCat4) ? businessItemsCat4 : []).filter(
+        (it) => String(it?.owner ?? '').toLowerCase() === bizOwnerLc
+      );
+      const cat14Owned = (Array.isArray(businessItemsCat14) ? businessItemsCat14 : []).filter(
+        (it) => String(it?.owner ?? '').toLowerCase() === bizOwnerLc
+      );
+      const businessOwned = [...cat4Owned, ...cat14Owned];
+      let bestBusiness = { name: '', worth: 0 };
+      for (const it of businessOwned) {
+        const c = Number(it?.categoryId ?? 0);
+        const t = Number(it?.typeId ?? 0);
+        const entry = BUSINESS_WORTH?.[c]?.[t];
+        const worth = Number(entry?.worth ?? 0);
+        if (worth > bestBusiness.worth) {
+          bestBusiness = { name: String(entry?.name ?? ''), worth };
+        }
+      }
+
+      const businessWorth = bestBusiness.worth;
+      const businessValue = bestBusiness.name ? `${bestBusiness.name}` : 'None';
       const ownerLc = String(player).toLowerCase();
       const slotsByOwner = (Array.isArray(allCitySlots) ? allCitySlots : []).filter(
         (s) => String(s?.owner ?? '').toLowerCase() === ownerLc
@@ -443,7 +485,7 @@
 
         { group: 'Assets', label: 'Bullets', value: bullets, worth: bulletsWorth },
         { group: 'Assets', label: 'Cash', value: cash, worth: cashWorth },
-        { group: 'Assets', label: 'Business', value: null, worth: 0 },
+        { group: 'Assets', label: 'Business', value: businessValue, worth: businessWorth },
         { group: 'Assets', label: 'Real estate', value: realEstateValue, worth: realEstateWorth },
         { group: 'Assets', label: 'Active land', value: activeLandCount, worth: activeLandWorth },
         { group: 'Assets', label: '$Mafia', value: mafiaToken, worth: mafiaWorth },
@@ -452,7 +494,7 @@
 
       const totalWorth = breakdown.reduce((sum, r) => sum + (Number(r.worth) || 0), 0);
 
-      return { totalWorth, worthBoostPercent: null, breakdown, cityWinners };
+      return { totalWorth, worthBoostPercent: null, breakdown, cityWinners, businessOwned };
     }
 
     async function onLoad() {
