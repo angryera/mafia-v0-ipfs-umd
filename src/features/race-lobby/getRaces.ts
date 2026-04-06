@@ -3,6 +3,8 @@ import { CONTRACTS } from '../../contracts/index.js';
 import type { ChainName } from '../../contracts/index.js';
 
 const DEFAULT_PAGE_SIZE = 200;
+/** Parallel getRaces calls per RPC round trip (smaller than getFamilies — each page is large). */
+const MULTICALL_BATCH_SIZE = 10;
 
 export interface RaceInfo {
   id: number;
@@ -75,6 +77,15 @@ function parseRace(
   };
 }
 
+function parsePage(raw: GetRacesRaw): RaceInfo[] {
+  const races = raw?.[0] ?? [];
+  const creatorCarDamagePercents = raw?.[1] ?? [];
+  const opponentCarDamagePercents = raw?.[2] ?? [];
+  return races.map((race, index) =>
+    parseRace(race, creatorCarDamagePercents, opponentCarDamagePercents, index)
+  );
+}
+
 export async function getRaces(
   chain: ChainName,
   pageSize = DEFAULT_PAGE_SIZE
@@ -85,26 +96,35 @@ export async function getRaces(
 
   const all: RaceInfo[] = [];
   let startIndex = 0;
+  let reachedEnd = false;
 
-  while (true) {
-    const raw = (await client.readContract({
+  while (!reachedEnd) {
+    const contracts = Array.from({ length: MULTICALL_BATCH_SIZE }, (_, i) => ({
       address,
       abi,
-      functionName: 'getRaces',
-      args: [BigInt(startIndex), BigInt(pageSize)],
-    })) as unknown as GetRacesRaw;
+      functionName: 'getRaces' as const,
+      args: [BigInt(startIndex + i * pageSize), BigInt(pageSize)] as const,
+    }));
 
-    const races = raw?.[0] ?? [];
-    const creatorCarDamagePercents = raw?.[1] ?? [];
-    const opponentCarDamagePercents = raw?.[2] ?? [];
-    const page = races.map((race, index) =>
-      parseRace(race, creatorCarDamagePercents, opponentCarDamagePercents, index)
-    );
+    const results = await client.multicall({ contracts, allowFailure: false });
 
-    if (page.length === 0) break;
-    all.push(...page);
-    if (page.length < pageSize) break;
-    startIndex += pageSize;
+    let consumed = 0;
+    for (let i = 0; i < results.length; i++) {
+      const raw = results[i] as unknown as GetRacesRaw;
+      const races = raw?.[0] ?? [];
+      if (races.length === 0) {
+        reachedEnd = true;
+        break;
+      }
+      all.push(...parsePage(raw));
+      consumed++;
+      if (races.length < pageSize) {
+        reachedEnd = true;
+        break;
+      }
+    }
+
+    startIndex += consumed * pageSize;
   }
 
   return all;

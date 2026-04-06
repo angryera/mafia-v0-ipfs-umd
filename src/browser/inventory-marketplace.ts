@@ -12,6 +12,8 @@ export interface MarketplaceBid {
 }
 
 export interface MarketplaceListing {
+  /** On-chain marketplace listing id (from getActiveListings `ids`). */
+  listingId: number;
   itemId: number;
   listingType: number;
   startingPrice: number;
@@ -72,8 +74,9 @@ function toNum(v: bigint | number | undefined): number {
   return Number(v ?? 0);
 }
 
-function parseListing(raw: RawListing): Omit<MarketplaceListing, 'item'> {
+function parseListing(raw: RawListing, listingId: number): Omit<MarketplaceListing, 'item'> {
   return {
+    listingId,
     itemId: toNum(raw.itemId),
     listingType: Number(raw.listingType ?? 0),
     startingPrice: toNum(raw.startingPrice),
@@ -140,8 +143,11 @@ export async function getActiveListings(options: GetActiveListingsOptions): Prom
     })) as unknown as GetActiveListingsRaw;
 
     const pageListings = (raw?.[0] ?? []) as RawListing[];
+    const pageIds = (raw?.[1] ?? []) as readonly bigint[];
     const pageItems = (raw?.[2] ?? []) as RawItem[];
-    listings.push(...pageListings.map(parseListing));
+    listings.push(
+      ...pageListings.map((l, i) => parseListing(l, toNum(pageIds[i])))
+    );
     items.push(...pageItems.map(parseInventoryItem));
   }
 

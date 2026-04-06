@@ -3,6 +3,7 @@ import { createBrowserClient } from './shared.js';
 import { CONTRACTS } from '../contracts/index.js';
 
 const DEFAULT_PAGE_SIZE = 200;
+const MULTICALL_BATCH_SIZE = 10;
 
 export interface XpBid {
   bidder: string;
@@ -102,20 +103,35 @@ export async function getXpListings(options: GetXpListingsOptions): Promise<XpMa
 
   const all: XpMarketItem[] = [];
   let startIndex = 0;
+  let reachedEnd = false;
 
-  while (true) {
-    const raw = (await client.readContract({
+  while (!reachedEnd) {
+    const contracts = Array.from({ length: MULTICALL_BATCH_SIZE }, (_, i) => ({
       address,
       abi,
-      functionName: 'getListings',
-      args: [BigInt(startIndex), BigInt(pageSize)],
-    })) as unknown as GetListingsRaw;
+      functionName: 'getListings' as const,
+      args: [BigInt(startIndex + i * pageSize), BigInt(pageSize)] as const,
+    }));
 
-    const page = normalizeListings(raw).map(parseItem);
-    if (page.length === 0) break;
-    all.push(...page);
-    if (page.length < pageSize) break;
-    startIndex += pageSize;
+    const results = await client.multicall({ contracts, allowFailure: false });
+
+    let consumed = 0;
+    for (let i = 0; i < results.length; i++) {
+      const raw = results[i] as unknown as GetListingsRaw;
+      const items = normalizeListings(raw);
+      if (items.length === 0) {
+        reachedEnd = true;
+        break;
+      }
+      all.push(...items.map(parseItem));
+      consumed++;
+      if (items.length < pageSize) {
+        reachedEnd = true;
+        break;
+      }
+    }
+
+    startIndex += consumed * pageSize;
   }
 
   return all;

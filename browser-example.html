@@ -793,6 +793,7 @@
           listings: listings.length,
           statusCounts,
           sample: listings.slice(0, 5).map((l) => ({
+            listingId: l.listingId,
             itemId: l.itemId,
             item: { categoryId: l.item.categoryId, typeId: l.item.typeId, owner: (l.item.owner || '').slice(0, 10) + '...' },
             listingType: l.listingType,

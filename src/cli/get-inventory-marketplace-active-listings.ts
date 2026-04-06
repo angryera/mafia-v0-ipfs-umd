@@ -35,7 +35,7 @@ async function main() {
       console.log('\nFirst 5 listings:');
       listings.slice(0, 5).forEach((l, i) => {
         console.log(
-          `  [${i + 1}] itemId=${l.itemId} cat=${l.item.categoryId} typeId=${l.item.typeId} type=${l.listingType} status=${l.status} seller=${l.seller.slice(0, 8)}... bids=${l.bids.length}`
+          `  [${i + 1}] itemId=${l.itemId} cat=${l.item.categoryId} typeId=${l.item.typeId} listingId=${l.listingId} type=${l.listingType} status=${l.status} seller=${l.seller.slice(0, 8)}... bids=${l.bids.length}`
         );
       });
     }
