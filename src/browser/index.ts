@@ -21,6 +21,7 @@ import { MafiaToken } from './mafia-token.js';
 import { MafiaWorth } from './worth.js';
 import { MafiaPlayerSubscription } from './mafia-player-subscription.js';
 import { MafiaPerkManager } from './mafia-perk-manager.js';
+import { MafiaDeposit } from './mafia-deposit.js';
 
 declare const window: Window & {
   MafiaInventory?: unknown;
@@ -43,6 +44,7 @@ declare const window: Window & {
   MafiaWorth?: unknown;
   MafiaPlayerSubscription?: unknown;
   MafiaPerkManager?: unknown;
+  MafiaDeposit?: unknown;
 };
 
 if (typeof window !== 'undefined') {
@@ -66,9 +68,10 @@ if (typeof window !== 'undefined') {
   window.MafiaWorth = MafiaWorth;
   window.MafiaPlayerSubscription = MafiaPlayerSubscription;
   window.MafiaPerkManager = MafiaPerkManager;
+  window.MafiaDeposit = MafiaDeposit;
 }
 
-export { MafiaInventory, MafiaProfile, MafiaFamily, MafiaMap, MafiaExchange, XpMarket, MafiaInventoryMarketplace, MafiaRaceLobby, MafiaRankXp, MafiaRaceXp, MafiaKillSkill, BustOutSkill, MafiaEquipment, MafiaBullet, MafiaGameBank, MafiaHelperCredit, MafiaToken, MafiaWorth, MafiaPlayerSubscription, MafiaPerkManager };
+export { MafiaInventory, MafiaProfile, MafiaFamily, MafiaMap, MafiaExchange, XpMarket, MafiaInventoryMarketplace, MafiaRaceLobby, MafiaRankXp, MafiaRaceXp, MafiaKillSkill, BustOutSkill, MafiaEquipment, MafiaBullet, MafiaGameBank, MafiaHelperCredit, MafiaToken, MafiaWorth, MafiaPlayerSubscription, MafiaPerkManager, MafiaDeposit };
 export { getItemsByCategory } from './mafia-inventory.js';
 export { getAllItemsByOwner } from './mafia-inventory.js';
 export { getUsersInfo } from './mafia-profile.js';
@@ -90,3 +93,4 @@ export { balanceOf as getMafiaTokenBalance } from './mafia-token.js';
 export { computeWorth } from './worth.js';
 export { getSubscriptionInfo } from './mafia-player-subscription.js';
 export { getActivePerkInfo } from './mafia-perk-manager.js';
+export { getLiquidityPositions } from './mafia-deposit.js';

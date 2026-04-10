@@ -20,6 +20,7 @@ import mafiaEquipmentAbi from '../abis/MafiaEquipment.json' with { type: 'json' 
 import mafiaBulletAbi from '../abis/MafiaBullet.json' with { type: 'json' };
 import mafiaGameBankAbi from '../abis/MafiaGameBank.json' with { type: 'json' };
 import mafiaHelperCreditAbi from '../abis/MafiaHelperCredit.json' with { type: 'json' };
+import mafiaDepositAbi from '../abis/MafiaDeposit.json' with { type: 'json' };
 import erc20Abi from '../abis/ERC20.json' with { type: 'json' };
 import mafiaPlayerSubscriptionAbi from '../abis/MafiaPlayerSubscription.json' with { type: 'json' };
 import mafiaPerkManagerAbi from '../abis/MafiaPerkManager.json' with { type: 'json' };
@@ -156,6 +157,13 @@ export const CONTRACTS = {
       pulse: '0x9D2417e5cB35abaae331b32fb262c75A258a0717' as `0x${string}`,
     },
     abi: mafiaHelperCreditAbi as Abi,
+  },
+  MafiaDeposit: {
+    addresses: {
+      bnb: '0xB081EC0763360a9Ad4D09AF2C9ec7DC1ED5190Ae' as `0x${string}`,
+      pulse: '0xC9565b4f23C301Cf9f158D72A842BA6a53B84590' as `0x${string}`,
+    },
+    abi: mafiaDepositAbi as Abi,
   },
   MafiaToken: {
     addresses: {

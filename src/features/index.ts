@@ -54,3 +54,5 @@ export {
   type OTCOffer,
   type InventoryItem,
 } from './mafia-exchange/index.js';
+
+export { getLiquidityPositions, type LiquidityPosition } from './mafia-deposit/index.js';

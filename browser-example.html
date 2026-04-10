@@ -295,6 +295,31 @@
           </div>
         </div>
 
+        <!-- MafiaDeposit Card (Cash Swap Liquidity) -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">MafiaDeposit</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getLiquidityPositions() # fetch all</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-gray-500 text-xs">chain:</span>
+              <select id="liq-chain" class="w-24 cli-input">
+                <option value="bnb">bnb</option>
+                <option value="pulse">pulse</option>
+              </select>
+            </div>
+            <button id="load-liquidity-positions"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+          </div>
+        </div>
+
         <!-- XpMarket Card -->
         <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
           <div class="flex flex-col gap-1.5">
@@ -909,6 +934,40 @@
         output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
       } finally {
         setButtonLoading("load-worth", false);
+      }
+    });
+
+    document.getElementById("load-liquidity-positions").addEventListener("click", async () => {
+      setButtonLoading("load-liquidity-positions", true);
+      const chain = (document.getElementById("liq-chain").value || "pulse").trim();
+
+      output.innerHTML = formatTerminalOutput(
+        `Loading all cash swap liquidity listings (${chain})...`,
+        'info'
+      );
+      try {
+        const list = await window.MafiaDeposit.getLiquidityPositions({
+          chain,
+        });
+
+        const activeCount = (list || []).reduce((sum, p) => sum + (p.active ? 1 : 0), 0);
+        const cashLeftTotal = (list || []).reduce((sum, p) => sum + BigInt(p.cashAmount || "0"), 0n);
+
+        const summary = {
+          total: (list || []).length,
+          active: activeCount,
+          cashLeftTotal: cashLeftTotal.toString(),
+          sample: (list || []).slice(0, 10),
+        };
+
+        output.innerHTML = formatTerminalOutput(
+          `Done: Liquidity positions loaded\n\nSummary:\n${JSON.stringify(summary, null, 2)}`,
+          'success'
+        );
+      } catch (err) {
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-liquidity-positions", false);
       }
     });
 
