@@ -6,7 +6,10 @@ import { getClient } from '../../core/chains.js';
 import { CONTRACTS } from '../../contracts/index.js';
 import type { ChainName } from '../../contracts/index.js';
 
-const BATCH_SIZE = 100; // Maximum addresses per multicall
+const BATCH_SIZE_BY_CHAIN: Record<ChainName, number> = {
+  bnb: 100,
+  pulse: 50,
+};
 
 export interface ParsedPlayerInfo {
   user: `0x${string}`;
@@ -46,12 +49,13 @@ export async function getPlayersInfo(
   const client = getClient(chain);
   const address = CONTRACTS.MafiaFamily.addresses[chain];
   const abi = CONTRACTS.MafiaFamily.abi;
+  const batchSize = BATCH_SIZE_BY_CHAIN[chain];
 
   const allPlayers: ParsedPlayerInfo[] = [];
 
   // Batch users into chunks to avoid exceeding multicall limits
-  for (let i = 0; i < users.length; i += BATCH_SIZE) {
-    const batch = users.slice(i, i + BATCH_SIZE);
+  for (let i = 0; i < users.length; i += batchSize) {
+    const batch = users.slice(i, i + batchSize);
     const batchUsers = batch as `0x${string}`[];
 
     const result = await client.readContract({

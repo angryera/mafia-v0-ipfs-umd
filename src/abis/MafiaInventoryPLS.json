@@ -519,6 +519,24 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "categoryId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "itemIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "addItemsByCategory",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "addr",
         "type": "address"
@@ -615,29 +633,6 @@
       }
     ],
     "name": "adminTransferItems",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "users",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "categoryIds",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "typeIds",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "airdropItems",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -850,6 +845,62 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "startIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "name": "getCarItemsByCategory",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "itemIds",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "categoryId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "typeId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct PLSMafiaInventory.Item[]",
+        "name": "list",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "cities",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "damagePercents",
+        "type": "uint8[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint8",
         "name": "typeId",
         "type": "uint8"
@@ -924,6 +975,173 @@
         ],
         "internalType": "struct PLSMafiaInventory.Category[]",
         "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "categoryId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "startIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "name": "getItemsByCategory",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "itemIds",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "categoryId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "typeId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct PLSMafiaInventory.Item[]",
+        "name": "list",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "cities",
+        "type": "uint8[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "itemIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "getMapItemsInfo",
+    "outputs": [
+      {
+        "internalType": "uint8[]",
+        "name": "cityIds",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "x",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "y",
+        "type": "uint8[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "slotType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "slotSubType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "variant",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "rarity",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isOwned",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isOperating",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "originalDefensePower",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "defensePower",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "boostPercentage",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint48",
+            "name": "nextUpgradeAvailableAt",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "lastOperatingTimestamp",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint256",
+            "name": "inventoryItemId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "familyId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakingAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "yieldPayout",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IPLSMafiaMap.Slot[]",
+        "name": "mapItemsInfo",
         "type": "tuple[]"
       }
     ],
@@ -1107,6 +1325,59 @@
       }
     ],
     "name": "itemCity",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "itemIdsByCategory",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "itemIdsByCity",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1403,19 +1674,6 @@
       }
     ],
     "name": "removeItem",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "itemId",
-        "type": "uint256"
-      }
-    ],
-    "name": "removeItemAdmin",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

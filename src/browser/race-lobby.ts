@@ -2,7 +2,10 @@ import type { Abi } from 'viem';
 import { createBrowserClient } from './shared.js';
 import { CONTRACTS } from '../contracts/index.js';
 
-const DEFAULT_PAGE_SIZE = 200;
+const DEFAULT_PAGE_SIZE_BY_CHAIN: Record<'bnb' | 'pulse', number> = {
+  bnb: 200,
+  pulse: 50,
+};
 const MULTICALL_BATCH_SIZE = 10;
 
 export interface RaceInfo {
@@ -95,10 +98,11 @@ function parsePage(raw: GetRacesRaw): RaceInfo[] {
 export async function getRaces(options: GetRacesOptions): Promise<RaceInfo[]> {
   const {
     chain,
-    pageSize = DEFAULT_PAGE_SIZE,
+    pageSize: inputPageSize,
     contractAddress: customAddress,
     rpcUrl,
   } = options;
+  const pageSize = inputPageSize ?? DEFAULT_PAGE_SIZE_BY_CHAIN[chain];
   const address = (customAddress ?? CONTRACTS.MafiaRaceLobby.addresses[chain]) as `0x${string}`;
   const abi = CONTRACTS.MafiaRaceLobby.abi as Abi;
   const client = createBrowserClient(chain, rpcUrl);

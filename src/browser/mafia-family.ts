@@ -6,8 +6,11 @@ import type { Abi } from 'viem';
 import { createBrowserClient } from './shared.js';
 import { CONTRACTS } from '../contracts/index.js';
 
-const CHUNK_SIZE = 100;
 const MULTICALL_BATCH_SIZE = 50;
+const CHUNK_SIZE_BY_CHAIN: Record<'bnb' | 'pulse', number> = {
+  bnb: 100,
+  pulse: 50,
+};
 
 export interface ParsedFamilyInfo {
   familyId: number;
@@ -69,6 +72,7 @@ export async function getFamilies(options: GetFamiliesOptions): Promise<ParsedFa
   const address = (customAddress ?? CONTRACTS.MafiaFamily.addresses[chain]) as `0x${string}`;
   const abi = CONTRACTS.MafiaFamily.abi as Abi;
   const client = createBrowserClient(chain, rpcUrl);
+  const CHUNK_SIZE = CHUNK_SIZE_BY_CHAIN[chain];
 
   const allFamilies: ParsedFamilyInfo[] = [];
   let startIndex = 0;
@@ -140,7 +144,7 @@ type RawPlayerInfo = {
 
 type GetPlayersInfoRaw = readonly RawPlayerInfo[];
 
-const PLAYERS_BATCH_SIZE = 100; // Maximum addresses per call
+const PLAYERS_BATCH_SIZE = 50; // Maximum addresses per call
 
 function parsePlayersResult(
   raw: GetPlayersInfoRaw,

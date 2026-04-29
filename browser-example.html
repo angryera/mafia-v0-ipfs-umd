@@ -278,7 +278,7 @@
               <span class="font-mono text-green-400 text-xs">→</span>
               <span class="font-mono text-gray-500 text-xs">computeWorth(chain:</span>
               <select id="worth-chain" class="w-24 cli-input">
-                <option value="bnb">bnb</option>
+                <option value="pulse">bnb</option>
                 <option value="pulse">pulse</option>
               </select>
               <span class="font-mono text-gray-500 text-xs">)</span>
@@ -309,7 +309,7 @@
             <div class="flex items-center gap-2">
               <span class="font-mono text-gray-500 text-xs">chain:</span>
               <select id="liq-chain" class="w-24 cli-input">
-                <option value="bnb">bnb</option>
+                <option value="pulse">bnb</option>
                 <option value="pulse">pulse</option>
               </select>
             </div>
@@ -371,7 +371,8 @@
             <div class="flex flex-wrap items-center gap-2">
               <span class="font-mono text-green-400 text-xs">→</span>
               <span class="font-mono text-gray-500 text-xs">getRaces(pageSize:</span>
-              <input type="number" id="races-page-size" value="200" class="w-20 text-center cli-input" placeholder="200">
+              <input type="number" id="races-page-size" value="200" class="w-20 text-center cli-input"
+                placeholder="200">
               <span class="font-mono text-gray-500 text-xs">)</span>
             </div>
             <button id="load-races"
@@ -409,7 +410,7 @@
   <script src="./dist/mafia-utils.js" defer></script>
   <script>
     const output = document.getElementById("output");
-    
+
     function formatTerminalOutput(text, type = 'info') {
       const prompt = '$ ';
       const colors = {
@@ -421,25 +422,25 @@
         default: '#00ff00',
         json: '#ffffff'
       };
-      
+
       // Split by lines
       const lines = text.split('\n');
       let result = '';
-      
+
       lines.forEach((line, index) => {
         if (index === 0) {
           // First line gets the prompt
           result += `<span style="color: ${colors.prompt}">${prompt}</span>`;
         }
-        
+
         if (line.trim() === '') {
           result += '\n';
           return;
         }
-        
+
         // Check if line is JSON (starts with { or [ or contains JSON structure)
-        if (line.trim().startsWith('{') || line.trim().startsWith('[') || 
-            line.includes('"') && (line.includes(':') || line.includes(','))) {
+        if (line.trim().startsWith('{') || line.trim().startsWith('[') ||
+          line.includes('"') && (line.includes(':') || line.includes(','))) {
           result += `<span style="color: ${colors.json}">${line}</span>`;
         }
         // Check for success indicators
@@ -458,15 +459,15 @@
         else {
           result += `<span style="color: ${colors[type]}">${line}</span>`;
         }
-        
+
         if (index < lines.length - 1) {
           result += '\n';
         }
       });
-      
+
       return result;
     }
-    
+
     output.innerHTML = formatTerminalOutput("Welcome! Click any button above to start exploring the BnbMafia SDK.\n\nTip: Results will appear here in real-time.", 'info');
 
     function setButtonLoading(buttonId, isLoading) {
@@ -490,7 +491,7 @@
       output.innerHTML = formatTerminalOutput(`Loading items (categoryId: ${categoryId})...`, 'info');
       try {
         const items = await window.MafiaInventory.getItemsByCategory({
-          chain: "bnb",
+          chain: "pulse",
           categoryId: categoryId,
           onProgress: (info) => {
             output.innerHTML = formatTerminalOutput(`Items: ${info.fetched} (batch ${info.batchIndex})...`, 'info');
@@ -516,7 +517,7 @@
       output.innerHTML = formatTerminalOutput(`Loading all items for owner ${owner} (BNB only)...`, 'info');
       try {
         const items = await window.MafiaInventory.getAllItemsByOwner({
-          chain: "bnb",
+          chain: "pulse",
           owner,
           onProgress: (p) => {
             output.innerHTML = formatTerminalOutput(
@@ -543,7 +544,7 @@
       output.innerHTML = formatTerminalOutput("Loading users...", 'info');
       try {
         const users = await window.MafiaProfile.getUsersInfo({
-          chain: "bnb",
+          chain: "pulse",
           onProgress: (info) => {
             output.innerHTML = formatTerminalOutput(`Users: ${info.fetched} (batch ${info.batchIndex})...`, 'info');
           },
@@ -561,7 +562,7 @@
       output.innerHTML = formatTerminalOutput("Loading families with player info...", 'info');
       try {
         const enrichedFamilies = await window.MafiaFamily.getFamiliesWithPlayers({
-          chain: "bnb",
+          chain: "pulse",
           onProgress: (info) => {
             if (info.step === 'families') {
               output.innerHTML = formatTerminalOutput(`Loading families... ${info.fetched} families (batch ${info.batchIndex || 0})`, 'info');
@@ -589,7 +590,7 @@
       output.innerHTML = formatTerminalOutput(`Loading slots for city ${cityId}...`, 'info');
       try {
         const slots = await window.MafiaMap.getSlots({
-          chain: "bnb",
+          chain: "pulse",
           cityId: cityId,
         });
 
@@ -648,7 +649,7 @@
       );
       try {
         const slots = await window.MafiaMap.getLandSlotsByOwner({
-          chain: "bnb",
+          chain: "pulse",
           owner,
           cityIds: ALL_CITY_IDS,
           requireInventoryItem: true,
@@ -689,7 +690,7 @@
       output.innerHTML = formatTerminalOutput(`Loading OTC offers (startIndex: ${startIndex}, length: ${length})...`, 'info');
       try {
         const offers = await window.MafiaExchange.getOTCOffers({
-          chain: "bnb",
+          chain: "pulse",
           startIndex,
           length,
         });
@@ -750,7 +751,7 @@
       output.innerHTML = formatTerminalOutput(`Loading ALL XP listings (pageSize: ${pageSize})...`, 'info');
       try {
         const listings = await window.XpMarket.getXpListings({
-          chain: "bnb",
+          chain: "pulse",
           pageSize,
         });
 
@@ -801,7 +802,7 @@
       output.innerHTML = formatTerminalOutput(`Loading marketplace active listings (pageSize: ${pageSize})...`, 'info');
       try {
         let listings = await window.MafiaInventoryMarketplace.getActiveListings({
-          chain: "bnb",
+          chain: "pulse",
           pageSize,
         });
 
@@ -850,8 +851,7 @@
       output.innerHTML = formatTerminalOutput(`Loading ALL races (pageSize: ${pageSize})...`, 'info');
       try {
         const races = await window.MafiaRaceLobby.getRaces({
-          chain: "bnb",
-          pageSize,
+          chain: "pulse"
         });
 
         const list = Array.isArray(races) ? races : [];
@@ -898,7 +898,7 @@
 
     document.getElementById("load-worth").addEventListener("click", async () => {
       setButtonLoading("load-worth", true);
-      const chain = (document.getElementById("worth-chain").value || "bnb").trim();
+      const chain = (document.getElementById("worth-chain").value || "pulse").trim();
       const player = (document.getElementById("worth-player").value || "").trim();
       const signMsg = (document.getElementById("worth-signmsg").value || "").trim();
       const signature = (document.getElementById("worth-signature").value || "").trim();

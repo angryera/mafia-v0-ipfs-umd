@@ -6,8 +6,11 @@ import type { Abi } from 'viem';
 import { createBrowserClient } from './shared.js';
 import { CONTRACTS } from '../contracts/index.js';
 
-const CHUNK_SIZE = 100;
 const MULTICALL_BATCH_SIZE = 50;
+const CHUNK_SIZE_BY_CHAIN: Record<'bnb' | 'pulse', number> = {
+  bnb: 100,
+  pulse: 50,
+};
 
 export interface ParsedUserInfo {
   user: string;
@@ -71,6 +74,7 @@ export async function getUsersInfo(options: GetUsersInfoOptions): Promise<Parsed
   const address = (customAddress ?? CONTRACTS.MafiaProfile.addresses[chain]) as `0x${string}`;
   const abi = CONTRACTS.MafiaProfile.abi as Abi;
   const client = createBrowserClient(chain, rpcUrl);
+  const CHUNK_SIZE = CHUNK_SIZE_BY_CHAIN[chain];
 
   const allUsers: ParsedUserInfo[] = [];
   let startIndex = 0;
