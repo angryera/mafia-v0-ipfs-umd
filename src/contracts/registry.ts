@@ -5,6 +5,7 @@
 import type { Abi } from 'viem';
 import mafiaInventoryAbi from '../abis/MafiaInventory.json' with { type: 'json' };
 import mafiaInventoryPlsAbi from '../abis/MafiaInventoryPLS.json' with { type: 'json' };
+import mafiaInventoryIndexAbi from '../abis/MafiaInventoryIndex.json' with { type: 'json' };
 import mafiaProfileAbi from '../abis/MafiaProfile.json' with { type: 'json' };
 import mafiaFamilyAbi from '../abis/MafiaFamily.json' with { type: 'json' };
 import mafiaMapAbi from '../abis/MafiaMap.json' with { type: 'json' };
@@ -52,6 +53,13 @@ export const CONTRACTS = {
       bnb: mafiaInventoryAbi as Abi,
       pulse: mafiaInventoryPlsAbi as Abi,
     },
+  },
+  MafiaInventoryIndex: {
+    addresses: {
+      bnb: '0x52d4D32881Bc981ea4c75Cd8041E610eb8b027C0' as `0x${string}`,
+      pulse: '0x52d4D32881Bc981ea4c75Cd8041E610eb8b027C1' as `0x${string}`,
+    },
+    abi: mafiaInventoryIndexAbi as Abi,
   },
   MafiaProfile: {
     addresses: {

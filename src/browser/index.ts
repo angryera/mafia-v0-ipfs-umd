@@ -22,9 +22,11 @@ import { MafiaWorth } from './worth.js';
 import { MafiaPlayerSubscription } from './mafia-player-subscription.js';
 import { MafiaPerkManager } from './mafia-perk-manager.js';
 import { MafiaDeposit } from './mafia-deposit.js';
+import { MafiaInventoryIndex } from './mafia-inventory-index.js';
 
 declare const window: Window & {
   MafiaInventory?: unknown;
+  MafiaInventoryIndex?: unknown;
   MafiaProfile?: unknown;
   MafiaFamily?: unknown;
   MafiaMap?: unknown;
@@ -49,6 +51,7 @@ declare const window: Window & {
 
 if (typeof window !== 'undefined') {
   window.MafiaInventory = MafiaInventory;
+  window.MafiaInventoryIndex = MafiaInventoryIndex;
   window.MafiaProfile = MafiaProfile;
   window.MafiaFamily = MafiaFamily;
   window.MafiaMap = MafiaMap;
@@ -71,9 +74,12 @@ if (typeof window !== 'undefined') {
   window.MafiaDeposit = MafiaDeposit;
 }
 
-export { MafiaInventory, MafiaProfile, MafiaFamily, MafiaMap, MafiaExchange, XpMarket, MafiaInventoryMarketplace, MafiaRaceLobby, MafiaRankXp, MafiaRaceXp, MafiaKillSkill, BustOutSkill, MafiaEquipment, MafiaBullet, MafiaGameBank, MafiaHelperCredit, MafiaToken, MafiaWorth, MafiaPlayerSubscription, MafiaPerkManager, MafiaDeposit };
+export { MafiaInventory, MafiaInventoryIndex, MafiaProfile, MafiaFamily, MafiaMap, MafiaExchange, XpMarket, MafiaInventoryMarketplace, MafiaRaceLobby, MafiaRankXp, MafiaRaceXp, MafiaKillSkill, BustOutSkill, MafiaEquipment, MafiaBullet, MafiaGameBank, MafiaHelperCredit, MafiaToken, MafiaWorth, MafiaPlayerSubscription, MafiaPerkManager, MafiaDeposit };
 export { getItemsByCategory } from './mafia-inventory.js';
 export { getAllItemsByOwner } from './mafia-inventory.js';
+export { getItemsByCategory as getIndexedItemsByCategory } from './mafia-inventory-index.js';
+export { getUserItemsByCategory as getIndexedUserItemsByCategory } from './mafia-inventory-index.js';
+export { getActiveItems as getIndexedActiveItems } from './mafia-inventory-index.js';
 export { getUsersInfo } from './mafia-profile.js';
 export { getFamilies, getPlayersInfo, getFamiliesWithPlayers } from './mafia-family.js';
 export { getSlots } from './mafia-map.js';

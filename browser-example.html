@@ -320,6 +320,45 @@
           </div>
         </div>
 
+        <!-- MafiaInventoryIndex Card -->
+        <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-cyan-400 text-xs">$</span>
+              <span class="font-mono text-gray-400 text-xs">MafiaInventoryIndex</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getItemsByCategory(categoryId:</span>
+              <input type="number" id="idx-category-id" value="15" class="w-16 text-center cli-input" placeholder="15">
+              <span class="font-mono text-gray-500 text-xs">)</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-mono text-green-400 text-xs">→</span>
+              <span class="font-mono text-gray-500 text-xs">getUserItemsByCategory(user:</span>
+              <input type="text" id="idx-owner-address" value="" class="w-full cli-input" placeholder="0x...">
+              <span class="font-mono text-gray-500 text-xs">categoryId:</span>
+              <input type="number" id="idx-user-category-id" value="15" class="w-16 text-center cli-input" placeholder="15">
+              <span class="font-mono text-gray-500 text-xs">)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-gray-500 text-xs">chain:</span>
+              <select id="idx-chain" class="w-24 cli-input">
+                <option value="bnb">bnb</option>
+                <option value="pulse">pulse</option>
+              </select>
+            </div>
+            <button id="load-index-items"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute
+            </button>
+            <button id="load-index-user-items"
+              class="px-2 py-1.5 border border-dark-700 rounded font-mono text-xs text-left cli-button">
+              Execute (User Items)
+            </button>
+          </div>
+        </div>
+
         <!-- XpMarket Card -->
         <div class="p-2.5 border border-dark-700 rounded" style="background-color: #0d1117;">
           <div class="flex flex-col gap-1.5">
@@ -968,6 +1007,80 @@
         output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
       } finally {
         setButtonLoading("load-liquidity-positions", false);
+      }
+    });
+
+    document.getElementById("load-index-items").addEventListener("click", async () => {
+      setButtonLoading("load-index-items", true);
+      const chain = (document.getElementById("idx-chain").value || "bnb").trim();
+      const categoryId = parseInt(document.getElementById("idx-category-id").value, 10) || 15;
+
+      output.innerHTML = formatTerminalOutput(
+        `Loading indexed items (${chain}) (categoryId: ${categoryId})...`,
+        'info'
+      );
+      try {
+        const items = await window.MafiaInventoryIndex.getItemsByCategory({
+          chain,
+          categoryId,
+          maxItems: 5000,
+          onProgress: (info) => {
+            output.innerHTML = formatTerminalOutput(
+              `Indexed items: ${info.fetched} (batch ${info.batchIndex})...`,
+              'info'
+            );
+          },
+        });
+
+        output.innerHTML = formatTerminalOutput(
+          `Done: ${items.length} indexed items\n\nFirst 10:\n${JSON.stringify(items.slice(0, 10), null, 2)}`,
+          'success'
+        );
+      } catch (err) {
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-index-items", false);
+      }
+    });
+
+    document.getElementById("load-index-user-items").addEventListener("click", async () => {
+      setButtonLoading("load-index-user-items", true);
+      const chain = (document.getElementById("idx-chain").value || "bnb").trim();
+      const owner = (document.getElementById("idx-owner-address").value || "").trim();
+      const categoryId = parseInt(document.getElementById("idx-user-category-id").value, 10) || 15;
+
+      if (!owner || !owner.startsWith("0x")) {
+        output.innerHTML = formatTerminalOutput("Error: Please enter a valid owner address (0x...)", 'error');
+        setButtonLoading("load-index-user-items", false);
+        return;
+      }
+
+      output.innerHTML = formatTerminalOutput(
+        `Loading indexed user items (${chain}) (user: ${owner.slice(0, 10)}..., categoryId: ${categoryId})...`,
+        'info'
+      );
+      try {
+        const items = await window.MafiaInventoryIndex.getUserItemsByCategory({
+          chain,
+          user: owner,
+          categoryId,
+          maxItems: 5000,
+          onProgress: (info) => {
+            output.innerHTML = formatTerminalOutput(
+              `Indexed user items: ${info.fetched} (batch ${info.batchIndex})...`,
+              'info'
+            );
+          },
+        });
+
+        output.innerHTML = formatTerminalOutput(
+          `Done: ${items.length} indexed user items\n\nFirst 10:\n${JSON.stringify(items.slice(0, 10), null, 2)}`,
+          'success'
+        );
+      } catch (err) {
+        output.innerHTML = formatTerminalOutput(`Error: ${err.message}`, 'error');
+      } finally {
+        setButtonLoading("load-index-user-items", false);
       }
     });
 

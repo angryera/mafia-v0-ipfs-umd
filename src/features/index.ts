@@ -5,6 +5,18 @@ export {
 } from './mafia-inventory/index.js';
 
 export {
+  getIndexedItemsByCategory,
+  type IndexedItem,
+  type GetIndexedItemsProgress,
+  getIndexedUserItemsByCategory,
+  type IndexedUserItem,
+  type GetIndexedUserItemsProgress,
+  getIndexedActiveItems,
+  type IndexedActiveItem,
+  type GetIndexedActiveItemsProgress,
+} from './mafia-inventory-index/index.js';
+
+export {
   getUsersInfo,
   type ParsedUserInfo,
   type UserExtraInfo,
